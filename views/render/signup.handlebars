@@ -1,0 +1,48 @@
+<div>
+    <h1>
+        Sign Up
+    </h1>
+    <form action="/signup" id="signup-form" method="POST">
+        <div class="firstName">
+            <label for="firstName">First Name</label>
+            <input type="text" name="firstName" id="firstName" placeholder="Enter First Name">
+        </div>
+        <div class="lastName">
+            <label for="lastName">Last Name</label>
+            <input type="text" name="lastName" id="lastName" placeholder="Enter Last Name">
+        </div>
+        <div class="email">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" placeholder="Enter Email">
+        </div>
+        <div class="password">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Enter Password">
+        </div>
+        <div class="confirmPassword">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password">
+        </div>
+        <div class="gender">
+            <label for="gender">Gender</label>
+            <input type="text" name="gender" id="gender" placeholder="Enter Gender">
+        </div>
+        <div class="city">
+            <label for="city">City</label>
+            <input type="text" name="city" id="gender" placeholder="Enter City">
+        </div>
+        <div class="state">
+            <label for="state">State</label>
+            <input type="text" name="state" id="gender" placeholder="Enter State">
+        </div>
+        <div class="age">
+            <label for="age">Age</label>
+            <input type="text" name="age" id="age" placeholder="Enter Age">
+        </div>
+        <button type="submit" id="btn">Log In</button>
+    </form>
+    <div class="error">
+        <label for="errorLabel" id="errorLabel">{{msg}}</label>
+    </div>
+    <a href="/login">Already have an account? Click here to log-in</a>
+</div>
