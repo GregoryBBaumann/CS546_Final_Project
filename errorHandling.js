@@ -38,11 +38,17 @@ function checkAge(age){
     if(age < 0 || age > 120) throw `Invalid Age`;
 }
 
+function checkRating(rating){
+    if(rating < 0) throw `Rating cannot be less than 0`;
+    if(rating > 5) throw `Rating cannot be greater than 5`;
+}
+
 module.exports = {
     checkStr,
     checkNum,
     checkEMail,
     checkPassword,
     isPresent,
-    checkAge
+    checkAge,
+    checkRating
 }
