@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const users = require('../data');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
-const bcrypt = require('bcrypt');
-const saltRounds = 16;
 
 router.get('/', async(req, res) =>{
     if(req.session.user){
@@ -39,9 +37,9 @@ router.post('/login', async(req, res) =>{
             res.redirect('/feed');
         }
     }catch (e){
-        if(e === "Either the email or password is invalid") return res.status(400).render('render/login', {class: "error", msg: e});
-        return res.status(500).json({error: "Internal Server Error"});
+        return res.status(400).render('render/login', {class: "error", msg: e});
     }
+    return res.status(500).json({error: "Internal Server Error"});
 })
 
 router.get('/signup', async(req, res) =>{
@@ -54,7 +52,7 @@ router.get('/signup', async(req, res) =>{
 })
 
 router.post('/signup', async(req, res) =>{
-    if(!req.session.user){
+    if(req.session.user){
         return res.redirect('/');
     }
     let {firstName, lastName, email, password, confirmPassword, gender, city, state, age} = req.body;
@@ -82,8 +80,7 @@ router.post('/signup', async(req, res) =>{
             res.redirect('/feed');
         }
     }catch (e){
-        if(e === "Email already in use") return res.status(400).render('render/signup', {class: "error", msg: e});
-        return res.status(500).json({error: "Internal Server Error"});
+        return res.status(400).render('render/signup', {class: "error", msg: e});
     }
 })
 
