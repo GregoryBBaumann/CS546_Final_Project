@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const users = require('../data');
-const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge } = require('../errorHandling');
+const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 
 router.get('/', async(req, res) =>{
     if(req.session.user){
@@ -33,7 +33,7 @@ router.post('/login', async(req, res) =>{
     try{
         const result = await users.login(email, password);
         if(result.authenticated === true){
-            req.session.user = email;
+            req.session.user = result._id;
             res.redirect('/feed');
         }
     }catch (e){
@@ -73,7 +73,7 @@ router.post('/signup', async(req, res) =>{
     try{
         const result = await users.signUp(firstName, lastName, email, password, gender, city, state, age);
         if(result.userInserted === true){
-            req.session.user = email;
+            req.session.user = result._id;
             res.redirect('/feed');
         }
     }catch (e){
@@ -94,6 +94,29 @@ router.get('/feed', async(req, res) =>{
 router.get('/logout', async(req, res) =>{
     req.session.destroy();
     res.redirect('/');
+})
+
+router.post('/postreview', async(req, res) =>{
+    let data = req.body;
+    let {title, category, review, rating} = data;
+    data.userID = req.session.user;
+    // error checking
+    try{
+        title = checkStr(title, "Title");
+        category = checkStr(category, "Category");
+        review = checkStr(review, "Review");
+        rating = checkNum(rating, "Rating");
+        checkRating(rating);
+        const result = await users.postReview(data);
+        return res.status(200).json(result);
+    }catch (e){
+        return res.status(400).json({error: e});
+    }
+})
+
+router.get('/getallreviews', async(req, res) =>{
+    const data = await users.getAllReviews()
+    return res.status(200).json(data);
 })
 
 module.exports = router;

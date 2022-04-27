@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
 const saltRounds = 16;
 const mongoCollections = require('../config/mongoCollections');
-const { checkStr, checkEMail, checkPassword, checkAge } = require('../errorHandling');
+const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 const users = mongoCollections.users;
+const reviews = mongoCollections.reviews;
+const { ObjectId } = require('mongodb');
 
 async function signUp(firstName, lastName, email, password, gender, city, state, age){
     // Check inputs
@@ -38,7 +40,8 @@ async function signUp(firstName, lastName, email, password, gender, city, state,
     }
     const res = await userCollection.insertOne(newUser);
     if(!res.acknowledged || !res.insertedId) throw `Could not insert User`;
-    return {userInserted: true}
+    const userInfo = await userCollection.findOne({email: email});
+    return {authenticated: true, userInserted: true, _id: userInfo._id};
 }
 
 async function login(email, password){
@@ -50,15 +53,48 @@ async function login(email, password){
     // Validate User
     const userCollection = await users();
     const user = await userCollection.findOne({
-        'email': email
+        email: email
     });
     if(!user) throw `Either the email or password is invalid`;
     const res = await bcrypt.compare(password, user.password);
-    if(res === true) return {authenticated: true};
+    if(res === true){
+        const userInfo = await userCollection.findOne({email: email});
+        return {authenticated: true, _id: userInfo._id};
+    }
     else throw `Either the email or password is invalid`;
+}
+
+async function postReview(data){
+    let {title, category, review, rating} = data;
+    title = checkStr(title, "Title");
+    category = checkStr(category, "Category");
+    review = checkStr(review, "Review");
+    rating = checkNum(rating, "Rating");
+    checkRating(rating);
+    
+    const userCollection = await users();
+    const user = await userCollection.findOne({_id: ObjectId(data.userID)});
+    let name = `${user.firstName} ${user.lastName}`;
+    data.name = name;
+    const reviewCollection = await reviews();
+    let res = await reviewCollection.insertOne(data);
+    if(!res.acknowledged || !res.insertedId) throw `Could not insert review`;
+    data = await reviewCollection.findOne({_id: res.insertedId});
+    
+    res = await userCollection.updateOne({_id: ObjectId(data.userID)}, {$push: {userReviews: data}})
+    if(!res.acknowledged || !res.modifiedCount) throw `Could not insert review`;
+    return data;
+}
+
+async function getAllReviews(){
+    const reviewCollection = await reviews();
+    const data = await reviewCollection.find({}).toArray();
+    return data;
 }
 
 module.exports = {
     signUp,
-    login
+    login,
+    postReview,
+    getAllReviews
 }
