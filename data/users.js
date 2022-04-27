@@ -6,6 +6,23 @@ const users = mongoCollections.users;
 const reviews = mongoCollections.reviews;
 const { ObjectId } = require('mongodb');
 
+function checkID(id){
+    if(id === undefined || id === null) throw `ID not present`;
+    checkStr(id);
+    if(!ObjectId.isValid(id)) throw `Invalid User`;
+}
+
+async function getUser(id){
+    checkID(id);
+    id = id.trim();
+    id = ObjectId(id);
+    const userCollection = await users();
+    userData = await userCollection.findOne({_id: id});
+    if(userData === null) throw `Invalid User`;
+    return userData;
+}
+
+
 async function signUp(firstName, lastName, email, password, gender, city, state, age){
     // Check inputs
     firstName = checkStr(firstName, "First Name");
@@ -92,9 +109,60 @@ async function getAllReviews(){
     return data;
 }
 
+async function updateUser(updateParams, id){
+    const names = {
+        firstName: "First Name",
+        lastName : "Last Name",
+        email: "E-Mail",
+        password: "Password",
+        gender: "Gender",
+        city: "City",
+        state: "State",
+        age: "Age"
+    }
+    const userCollection = await users();
+    const user = await userCollection.findOne({_id: ObjectId(id)})
+    if(user === null) throw `Could not find user. Please try again later.`;
+    for(let p in updateParams){
+        if(updateParams[p] === user[p]) throw `${names[p]} is same as before. Please enter new ${names[p]}.`;
+    }
+    let res;
+    if(updateParams.email !== undefined){
+        res = await userCollection.findOne({email: updateParams.email});
+        if(res !== null) throw `E-Mail already in use. Please use a different email.`;
+    }
+    if(updateParams.password !== undefined){
+        res = await bcrypt.compare(updateParams.password, user.password);
+        if(res === true) throw `Password is same as old password. Please enter a new password.`;
+        updateParams.password = await bcrypt.hash(updateParams.password, saltRounds);
+    }
+    let name = "";
+    if(('firstName' in updateParams) || ('lastName' in updateParams)){
+        if('firstName' in updateParams) name += updateParams['firstName'] + " ";
+        else name += user['firstName'] + " ";
+        if('lastName' in updateParams) name += updateParams['lastName'];
+        else name += user['lastName'];
+    }
+    if(name.length !== 0){
+        for(let i of user.userReviews){
+            i['name'] = name;
+        }
+        updateParams.userReviews = user.userReviews;
+    }
+    res = await userCollection.updateOne({_id: ObjectId(id)}, {$set: updateParams});
+    if(!res.acknowledged || !res.modifiedCount) throw `Could not edit personal information. Please try again later.`;
+    
+    // update reviews
+    const reviewCollection = await reviews();
+    res = await reviewCollection.findOne({'userID': id});
+    if(res !== null) await reviewCollection.updateMany({'userID': id}, {$set: {"name": name}});
+}
+
 module.exports = {
     signUp,
     login,
     postReview,
-    getAllReviews
+    getAllReviews,
+    getUser,
+    updateUser
 }
