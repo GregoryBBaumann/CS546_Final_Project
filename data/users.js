@@ -6,6 +6,7 @@ const users = mongoCollections.users;
 const reviews = mongoCollections.reviews;
 const threads = mongoCollections.threads;
 const { ObjectId } = require('mongodb');
+const { del } = require('express/lib/application');
 
 function checkID(id){
     if(id === undefined || id === null) throw `ID not present`;
@@ -52,6 +53,9 @@ async function signUp(firstName, lastName, email, password, gender, city, state,
         city: city,
         state: state,
         age: age,
+        friends: new Set([]),
+        friendReq: new Set([]),
+        friendReqSent: new Set([]),
         userReviews: [],
         userThreads: [],
         userVotes: []
@@ -202,6 +206,17 @@ async function updateUser(updateParams, id){
     if(res !== null) await reviewCollection.updateMany({'userID': id}, {$set: {"name": name}});
 }
 
+async function updateFriends(data){
+    if(!("friendReqSent" in data)) data["friendReqSent"] = {};
+    if(!("friendReq" in data)) data["friendReq"] = {};
+    if(!("friends" in data)) data["friends"] = {};
+    const userCollection = await users();
+    let id = data._id;
+    delete data._id;
+    const res = await userCollection.updateOne({_id: ObjectId(id)}, {$set: data});
+    return res;
+}
+
 module.exports = {
     signUp,
     login,
@@ -209,6 +224,7 @@ module.exports = {
     getAllReviews,
     getUser,
     updateUser,
+    updateFriends
     postThread,
     getAllThreads,
     getThreadTitle
