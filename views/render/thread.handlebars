@@ -1,0 +1,31 @@
+<div>
+    <h1>Make Thread</h1>
+    <div class="newThread">
+        <form class = "newThread" id="newThreadForm" method="POST">
+            <div>
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title">
+            </div>
+            <div>
+                <label for="text">Thread Text:</label>
+                <textarea name="text" id="text" cols="50" rows="7"></textarea>
+            </div>
+            <button type="submit" id="forumButton">Post</button>
+        </form>
+    </div>
+    {{#if error}}
+    <div class="error" id="newThreadError">
+        <label for="errorLabel" id="errorLabel">{{error}}</label>
+    </div>
+    {{/if}}
+    <div class="threadsList" id="threadsList">
+        {{#if threadList}}
+            {{#each threadList}}
+                <div class="threadLink">
+                    <a href="/thread/{{this.title}}">{{this.title}}</a>
+                    <p>{{this.text}}</p>
+                </div>
+            {{/each}}
+        {{/if}}
+    </div>
+</div>

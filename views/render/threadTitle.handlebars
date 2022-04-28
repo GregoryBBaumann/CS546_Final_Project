@@ -1,0 +1,25 @@
+<div>
+    <h3 id="threadTitle">{{title}}</h1>
+    <p id="threadText">{{text}}</p>
+    <p>Voting: {{voting}}</p>
+    <div class="like/dislike" id="like/dislike">
+        <button id="likeButton">Like</button>
+        <button id="dislikeButton">Dislike</button>
+    </div>
+    <h4>Comments:</h2>
+    <div class="commentInput" id="commentInput">
+        <form class="postComment" id="postComment">
+            <div>
+                <label for="text">Comment Text:</label>
+            </div>
+            <div>
+                <textarea name="text" id="text" cols="50" rows="7"></textarea>
+            </div>
+            <button class="commentButton" id="commmentButton">Post Comment</button>
+        </form>
+    </div>
+    <ul class="commentsList" id="commentsLists">
+    </ul>
+    <a href="/threads">Return</a>
+    <p class="threadId" id="threadId" hidden>{{_id}}</p>
+</div>
