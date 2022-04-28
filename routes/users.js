@@ -39,6 +39,7 @@ router.post('/login', async(req, res) =>{
     }catch (e){
         return res.status(400).render('render/login', {class: "error", msg: e});
     }
+    return res.status(500).json({error: "Internal Server Error"});
 })
 
 router.get('/signup', async(req, res) =>{
@@ -137,11 +138,12 @@ router.get('/userinfo/*', async(req, res) =>{
     else{
         try{
         const id = req.params['0'];
+        let sameUser = false;
+        if(id === req.session.user) sameUser = true;
         const data = await users.getUser(id);
-        const currUserData = await users.getUser(req.session.user);
         const userInfo = {
             data: data,
-            currUser: currUserData
+            sameUser: sameUser
         };
         res.render('render/userInfo', userInfo);
         }catch(e){
@@ -157,11 +159,12 @@ router.post('/userinfo/*', async(req, res) =>{
     else{
         try{
         const id = req.params['0'];
+        let sameUser = false;
+        if(id === req.session.user) sameUser = true;
         const data = await users.getUser(id);
-        const currUserData = await users.getUser(req.session.user);
         const userInfo = {
             data: data,
-            currUser: currUserData
+            sameUser: sameUser
         };
         return res.status(200).json(userInfo);
         }catch(e){
@@ -233,19 +236,6 @@ router.post('/editprofile', async(req, res) =>{
     
 })
 
-router.post('/updatefriends', async(req, res) =>{
-    if(!req.session.user){
-        return res.status(401);
-    }
-    else{
-        let result = await users.updateFriends(req.body);
-        if(!(result.acknowledged) || !(result.modifiedCount)) return res.status(500).json("Server Error");
-        return res.status(200).json("Success");
-    }
-})
-
-router.get('/friendrequests', async(req, res) =>{
-
 router.get('/threads', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
@@ -299,14 +289,10 @@ router.get('/thread/:title', async(req, res) =>{
 })
 
 router.post('/thread/:title/comment', async(req, res) =>{
-
     if(!req.session.user){
         return res.redirect('/');
     }
     else{
-
-        res.render('render/friendRequests', {currUser: req.session.user});
-
         try{
             let title = checkStr(req.params.title);
             let thread = await users.getThreadTitle(title);
@@ -314,7 +300,6 @@ router.post('/thread/:title/comment', async(req, res) =>{
         }catch (e){
             return res.status(400).json({error: e});
         }
-
     }
 })
 
