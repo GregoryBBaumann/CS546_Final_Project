@@ -4,6 +4,7 @@ const mongoCollections = require('../config/mongoCollections');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 const users = mongoCollections.users;
 const reviews = mongoCollections.reviews;
+const threads = mongoCollections.threads;
 const { ObjectId } = require('mongodb');
 const { del } = require('express/lib/application');
 
