@@ -14,6 +14,5 @@ const getCollectionFn = (collection) =>{
 
 module.exports = {
     users: getCollectionFn('users'),
-    reviews: getCollectionFn('reviews'),
-    threads: getCollectionFn('threads')
+    reviews: getCollectionFn('reviews')
 };

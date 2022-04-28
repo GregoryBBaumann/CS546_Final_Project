@@ -38,7 +38,7 @@ const rewriteUnsupportedBrowserMethods = (req, res, next) => {
         secret: 'Secret Message',
         resave: false,
         saveUninitialized: true,
-        cookie: {maxAge: 600000}
+        cookie: {maxAge: 6000000}
       })
     )
     
