@@ -1,0 +1,17 @@
+<div>
+    <h1 id="threadTitle">{{title}}</h1>
+    <p id="threadText">{{text}}</p>
+    <p>Voting: {{voting}}</p>
+    <h2>Comments:</h2>
+    {{#if comments}}
+    <ul>
+        {{#each comments}}
+        <li>
+            <h5>{{this.name}}</h5>
+            <p>{{this.comment}}</p>
+        <li>
+        {{/each}}
+    </ul>
+    {{/if}}
+    <a href="/threads">Return</a>
+</div>

@@ -236,4 +236,56 @@ router.post('/editprofile', async(req, res) =>{
     
 })
 
+router.get('/threads', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        threadLs = await users.getAllThreads();
+        res.render('render/thread',{threadList: threadLs});
+    };
+})
+
+router.post('/threads', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else {
+
+        let data = req.body;
+        userID = req.session.user;
+        // error checking
+        try{
+            let title = checkStr(data.title, "Title");
+            let text = checkStr(data.text, "Text");
+            const d = new Date();
+            let day = `${d.getDate()+1}`;
+            if(day < 10) day = "0".concat(day);
+            let month = `${d.getMonth()+1}`;
+            if(month < 10) month = "0".concat(month);
+            let date = `${d.getFullYear()}/${month}/${day}`;
+            const result = await users.postThread(title,date,text,0,userID);
+            threadLs = await users.getAllThreads();
+            return res.status(200).render('render/thread',{threadList: threadLs});
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
+router.get('/thread/:title', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            let title = checkStr(req.params.title);
+            let thread = await users.getThreadTitle(title);
+            return res.status(200).render('render/threadTitle',thread);
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
 module.exports = router;
