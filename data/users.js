@@ -4,8 +4,8 @@ const mongoCollections = require('../config/mongoCollections');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 const users = mongoCollections.users;
 const reviews = mongoCollections.reviews;
-const threads = mongoCollections.threads;
 const { ObjectId } = require('mongodb');
+const { del } = require('express/lib/application');
 
 function checkID(id){
     if(id === undefined || id === null) throw `ID not present`;
@@ -52,6 +52,9 @@ async function signUp(firstName, lastName, email, password, gender, city, state,
         city: city,
         state: state,
         age: age,
+        friends: new Set([]),
+        friendReq: new Set([]),
+        friendReqSent: new Set([]),
         userReviews: [],
         userThreads: [],
         userVotes: []
@@ -110,49 +113,6 @@ async function getAllReviews(){
     return data;
 }
 
-async function postThread(title,postedDate,text,voting,userId){
-    title = checkStr(title, "Title");
-    text = checkStr(text, "Post text");
-    if(typeof voting != 'number'){
-        voting = checkNum(voting, "Voting");
-    }
-    
-    let data = {
-        title: title,
-        postedDate: postedDate,
-        text: text,
-        voting: voting,
-        comments: []
-    }
-
-    // Insert thread into database
-    const threadCollection = await threads();
-    let res = await threadCollection.insertOne(data);
-    if(!res.acknowledged || !res.insertedId) throw `Could not insert thread`;
-    
-    // Insert thread into user threads
-    const userCollection = await users();
-    res = await userCollection.updateOne({_id: ObjectId(userId)}, {$push: {userThreads: data}})
-    if(!res.acknowledged || !res.modifiedCount) throw `Could not update user`;
-    return data;
-}
-
-async function getAllThreads(){
-    const threadCollection = await threads();
-    const data = await threadCollection.find({}).toArray();
-    return data;
-}
-
-async function getThreadTitle(title){
-    title = checkStr(title);
-    const threadCollection = await threads();
-    const data = await threadCollection.findOne({title: title});
-    if (data === null){
-        return -1;
-    }
-    return data;
-}
-
 async function updateUser(updateParams, id){
     const names = {
         firstName: "First Name",
@@ -202,6 +162,17 @@ async function updateUser(updateParams, id){
     if(res !== null) await reviewCollection.updateMany({'userID': id}, {$set: {"name": name}});
 }
 
+async function updateFriends(data){
+    if(!("friendReqSent" in data)) data["friendReqSent"] = {};
+    if(!("friendReq" in data)) data["friendReq"] = {};
+    if(!("friends" in data)) data["friends"] = {};
+    const userCollection = await users();
+    let id = data._id;
+    delete data._id;
+    const res = await userCollection.updateOne({_id: ObjectId(id)}, {$set: data});
+    return res;
+}
+
 module.exports = {
     signUp,
     login,
@@ -209,7 +180,5 @@ module.exports = {
     getAllReviews,
     getUser,
     updateUser,
-    postThread,
-    getAllThreads,
-    getThreadTitle
+    updateFriends
 }

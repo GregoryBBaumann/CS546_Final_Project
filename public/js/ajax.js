@@ -1,5 +1,9 @@
 (function ($){
+    var nav = $('#nav');
+
+    var home = $('#home');
     var logInForm = $('#login-form');
+    var signUpForm = $('#signup-form');
     var newPostForm = $('#newPostForm');
     var title = $('#title');
     var cat = $('#cat');
@@ -8,15 +12,10 @@
     var date = new Date().toISOString().split("T")[0].replaceAll("-", "/");
     var feed = $('#feed');
 
-    var userInfo = $('#userInfo');
-    var userInfoDiv = $('#userInfoDiv');
-    var userInfoID = $('#userID');
-    var userBio = $('#userBio');
-    var userPosts = $('#userPosts');
-    var userBioClick = $('#userBioClick');
-    var userPostsClick = $('#userPostsClick');
-    var userLikedClick = $('#userLikedClick');
-    var editProfileClick = $('#editProfileClick');
+    if(home.length || logInForm.length || signUpForm.length){
+        nav.hide();
+    }
+
 
     function makeReview(data){
         let{title, category, rating, review, postedDate, vote, name, userID} = data;
@@ -72,40 +71,5 @@
             feed.prepend(postReview);
         });
     });
-
-    if(userInfo.length){
-        userInfoID.hide();
-        editProfileClick.hide();
-        userBio.hide();
-        userPosts.hide();
-
-        let a = userInfoID.text();
-        var userInfoReq = {
-            method: 'POST',
-            url: `/userinfo/${a}`,
-        }
-        $.ajax(userInfoReq).then(function(res){
-            if(res.sameUser === true){
-                editProfileClick.show();
-            }
-            let posts = res.data.userReviews;
-            $.each(posts, function(){
-                let rev = makeReview(this);
-                userPosts.prepend(rev);
-            })
-        })
-    }
-
-    userBioClick.on('click', function(event){
-        event.preventDefault();
-        userPosts.hide();
-        userBio.show();
-    })
-
-    userPostsClick.on('click', function(event){
-        event.preventDefault();
-        userBio.hide();
-        userPosts.show();
-    })
 
 })(window.jQuery);
