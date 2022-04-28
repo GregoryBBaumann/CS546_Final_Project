@@ -174,6 +174,49 @@ async function updateFriends(data){
     return res;
 }
 
+async function postThread(title,postedDate,text,voting,userId){
+    title = checkStr(title, "Title");
+    text = checkStr(text, "Post text");
+    if(typeof voting != 'number'){
+        voting = checkNum(voting, "Voting");
+    }
+    
+    let data = {
+        title: title,
+        postedDate: postedDate,
+        text: text,
+        voting: voting,
+        comments: []
+    }
+
+    // Insert thread into database
+    const threadCollection = await threads();
+    let res = await threadCollection.insertOne(data);
+    if(!res.acknowledged || !res.insertedId) throw `Could not insert thread`;
+    
+    // Insert thread into user threads
+    const userCollection = await users();
+    res = await userCollection.updateOne({_id: ObjectId(userId)}, {$push: {userThreads: data}})
+    if(!res.acknowledged || !res.modifiedCount) throw `Could not update user`;
+    return data;
+}
+
+async function getAllThreads(){
+    const threadCollection = await threads();
+    const data = await threadCollection.find({}).toArray();
+    return data;
+}
+
+async function getThreadTitle(title){
+    title = checkStr(title);
+    const threadCollection = await threads();
+    const data = await threadCollection.findOne({title: title});
+    if (data === null){
+        return -1;
+    }
+    return data;
+}
+
 module.exports = {
     signUp,
     login,
@@ -181,5 +224,8 @@ module.exports = {
     getAllReviews,
     getUser,
     updateUser,
-    updateFriends
+    updateFriends,
+    postThread,
+    getAllThreads,
+    getThreadTitle
 }
