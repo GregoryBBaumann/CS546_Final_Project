@@ -268,12 +268,27 @@ router.post('/threads', async(req, res) =>{
             threadLs = await users.getAllThreads();
             return res.status(200).render('render/thread',{threadList: threadLs});
         }catch (e){
-            return res.status(400).json({error: e});
+            return res.status(400).render('render/thread',{threadList: threadLs, error: e});
         }
     }
 })
 
 router.get('/thread/:title', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            let title = checkStr(req.params.title);
+            let thread = await users.getThreadTitle(title);
+            return res.status(200).render('render/threadTitle',thread);
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
+router.post('/thread/:title/comment', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
     }

@@ -13,7 +13,12 @@
             <button type="submit" id="forumButton">Post</button>
         </form>
     </div>
-    <div id="threads">
+    {{#if error}}
+    <div class="error" id="newThreadError">
+        <label for="errorLabel" id="errorLabel">{{error}}</label>
+    </div>
+    {{/if}}
+    <div class="threadsList" id="threadsList">
         {{#if threadList}}
             {{#each threadList}}
                 <div class="threadLink">
