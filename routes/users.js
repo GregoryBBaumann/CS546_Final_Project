@@ -234,6 +234,16 @@ router.post('/editprofile', async(req, res) =>{
 })
 
 
+router.get('/myprofile', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        return res.redirect(`/userinfo/${req.session.user}`);
+    }
+})
+
+
 router.post('/updatefriends', async(req, res) =>{
     if(!req.session.user){
         return res.status(401);
@@ -262,6 +272,15 @@ router.get('/threads', async(req, res) =>{
         threadLs = await users.getAllThreads();
         res.render('render/thread',{threadList: threadLs});
     };
+})
+
+router.get('/myfriends', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        res.render('render/myFriends', {currUser: req.session.user});
+    }
 })
 
 router.post('/threads', async(req, res) =>{
