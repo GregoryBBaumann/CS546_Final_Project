@@ -26,4 +26,16 @@
     <div id="feed">
 
     </div>
+
+    <ul id="reviewList"></ul>
+    <div id="reviewContent" hidden></div>
+    <form id="reviewComment" hidden>
+        <div class="form-group">
+            <label id="formLabel" for="reviewComment_input">Comment</label>
+            <textarea class="form-control" id="reviewComment_input" rows="3" value="{{revComment}}"></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit">Submit</button>
+        </div>
+    </form>
 </div>
