@@ -217,6 +217,34 @@ async function getThreadTitle(title){
     return data;
 }
 
+async function postReviewComments(reviewId, comments){
+    comments = checkStr(comments, "Comment");
+    let data = {
+        comments: comments
+    }
+    const reviewsCollection = await reviews();
+    const updateInfo = await reviewsCollection.updateOne(
+        { _id: ObjectId(reviewId) },
+        { $addToSet: { comments: data } }
+    );
+    if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
+    return data;
+}
+
+async function postThreadsComments(threadId, comments){
+    comments = checkStr(comments, "Comment");
+    let data = {
+        comments: comments
+    }
+    const threadCollection = await threads();
+    const updateInfo = await threadCollection.updateOne(
+        { _id: ObjectId(threadId) },
+        { $addToSet: { comments: data } }
+    );
+    if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
+    return data;
+}
+
 module.exports = {
     signUp,
     login,
@@ -227,5 +255,7 @@ module.exports = {
     updateFriends,
     postThread,
     getAllThreads,
-    getThreadTitle
+    getThreadTitle,
+    postThreadsComments,
+    postReviewComments
 }
