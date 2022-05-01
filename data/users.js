@@ -114,18 +114,6 @@ async function getAllReviews(){
     return data;
 }
 
-async function getReviews(id) {
-    checkID(id);
-    if (id === undefined) throw 'You must provide an ID';
-    const reviewsCollection = await reviews();
-    const review = await reviewsCollection.findOne({ _id: ObjectId(id) });
-
-    if (!review) throw 'Could not find post with id of ' + id;
-    let updatedIdReview = review;
-    updatedIdReview._id = ObjectId(updatedIdReview._id).toString();
-    return updatedIdReview;
-}
-
 async function updateUser(updateParams, id){
     const names = {
         firstName: "First Name",
@@ -286,6 +274,19 @@ async function getAllReviewComments(id) {
     if (!reviews) throw 'Could not find review with id of ' + id;
 
     return reviews.comments;
+}
+
+
+async function getReviews(id) {
+    checkID(id);
+    if (id === undefined) throw 'You must provide an ID';
+    const reviewsCollection = await reviews();
+    const review = await reviewsCollection.findOne({ _id: ObjectId(id) });
+
+    if (!review) throw 'Could not find post with id of ' + id;
+    let updatedIdReview = review;
+    updatedIdReview._id = ObjectId(updatedIdReview._id).toString();
+    return updatedIdReview;
 }
 
 module.exports = {
