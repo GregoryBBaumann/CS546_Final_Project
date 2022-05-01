@@ -11,9 +11,8 @@
     var review = $('#review');
     var date = new Date().toISOString().split("T")[0].replaceAll("-", "/");
     var feed = $('#feed');
-    var reviewComment = $('#reviewComment');
     var reviewList = $('#reviewList');
-    var reviewContent = $('#reviewContent');
+
 
     if(home.length || logInForm.length || signUpForm.length){
         nav.hide();
@@ -41,7 +40,8 @@
             console.log(responseMessage);
             for (i in responseMessage) {
                 let title = responseMessage[i].title;
-                reviewList.append('<li><a href=' + title + '>' + title + '</a></li>');
+                let id = responseMessage[i]._id;
+                reviewList.append(`<li><a href='/review/${id}'> ${title} </a> </li>`);
             }
         });
     });
@@ -64,38 +64,6 @@
         reviewComment.show();
     }
 */
-
-$(document).on('click', "li a" , function(event) {
-    event.preventDefault();
-    reviewList.hide();
-    reviewContent.show();
-    reviewContent.empty();
-    reviewComment.show();
-    var array = $(this);
-    var requestConfig = {
-        method: 'GET',
-        url: '/getallreviews'
-    };
-    $.ajax(requestConfig).then(function (responseMessage) {
-        for (i in responseMessage) {
-           // let title = responseMessage[i].title;
-           // if(title === array[0].substring(21)){
-                reviewContent.append(
-                    '<h1>' + responseMessage[i].title + '</h1>'+
-                    '<dt>category</dt>'+
-                    '<dd>'+ responseMessage[i].category +'</dd>'+
-                    '<dt>rating</dt>'+
-                    '<dd>'+ responseMessage[i].rating +'</dd>'+
-                    '<dt>review</dt>'+
-                    '<dd>'+ responseMessage[i].review +'</dd>'+
-                    '</dl>'
-                )
-           // }
-        }
-        
-    });
-});
-
 
 
     newPostForm.submit(function (event){
