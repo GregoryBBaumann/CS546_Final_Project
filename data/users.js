@@ -245,12 +245,10 @@ async function postThreadComment(comment, threadId, userId){
     return data;
 }
 
-async function postReviewComments(reviewId, userId, comments){
-    comments = checkStr(comments, "Comments");
-    checkID(reviewId);
-    checkID(userId);
-    const commentId = new ObjectId();
-    userData = await getUser(userId);
+
+async function postReviewComments(reviewId, comments){
+    comments = checkStr(comments, "Comment");
+
     let data = {
         _id: commentId,
         userName : `${userData.firstName} ${userData.lastName}`,
@@ -260,7 +258,8 @@ async function postReviewComments(reviewId, userId, comments){
     const reviewsCollection = await reviews();
     const updateInfo = await reviewsCollection.updateOne(
         { _id: ObjectId(reviewId) },
-        { $push: { comments: data } }
+        { $addToSet: { comments: data } }
+
     );
     if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
     return data;
@@ -304,6 +303,6 @@ module.exports = {
     postReviewComments,
     getThreadId,
     checkID,
-    postThreadComment,
-    getAllReviewComments
+    postThreadComment
+
 }
