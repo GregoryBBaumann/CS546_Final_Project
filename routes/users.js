@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const users = require('../data');
+const { checkID } = require('../data/users');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 
 router.get('/', async(req, res) =>{
@@ -310,14 +311,14 @@ router.post('/threads', async(req, res) =>{
     }
 })
 
-router.get('/thread/:title', async(req, res) =>{
+router.get('/thread/:id', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
     }
     else{
         try{
-            let title = checkStr(req.params.title);
-            let thread = await users.getThreadTitle(title);
+            users.checkID(req.params.id);
+            let thread = await users.getThreadId(req.params.id);
             return res.status(200).render('render/threadTitle',thread);
         }catch (e){
             return res.status(400).json({error: e});
@@ -325,15 +326,17 @@ router.get('/thread/:title', async(req, res) =>{
     }
 })
 
-router.post('/thread/:title/comment', async(req, res) =>{
+router.post('/thread/:id/comment', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
     }
     else{
         try{
-            let title = checkStr(req.params.title);
-            let thread = await users.getThreadTitle(title);
-            return res.status(200).render('render/threadTitle',thread);
+            let data = req.body;
+            console.log(data);
+            checkStr(data.text);
+            let comment = await users.postThreadComment(data.text,req.params.id,req.session.user);
+            return res.status(200).json({userName:comment.userName,comment:comment.comment});
         }catch (e){
             return res.status(400).json({error: e});
         }
