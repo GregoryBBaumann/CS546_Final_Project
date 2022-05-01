@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const users = require('../data');
+const { checkID } = require('../data/users');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 const { ObjectId } = require('mongodb');
 
@@ -132,25 +133,16 @@ router.get('/getallreviews', async(req, res) =>{
 })
 
 router.get('/review/:idNumber', async(req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        try{
-            let reviewPost = await users.getReviews(req.params.idNumber);
-            const title = reviewPost.name;
-            reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
-            res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
-        } catch(e){
-            return res.status(400).json({error: e});
-        }
-    }
+    let reviewPost = await users.getReviews(req.params.idNumber);
+    const title = reviewPost.name;
+    reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
+    //let userId = ObjectId(req.session.user.userid).toString();
+    res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
 });
-
 
 router.post('/review/newComment', async(req, res) => {
     try {
-        let userId = ObjectId(req.session.user.userid).toString();
+        let userId = ObjectId(req.session.user).toString();
         let newComment = await users.postReviewComments(ObjectId(req.body.postId).toString(), userId, req.body.comment);
         if (newComment) {
             res.json({ status: 'ok' });
@@ -343,30 +335,31 @@ router.post('/threads', async(req, res) =>{
     }
 })
 
-router.get('/thread/:title', async(req, res) =>{
+router.get('/thread/:id', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
     }
     else{
         try{
-            let title = checkStr(req.params.title);
-            let thread = await users.getThreadTitle(title);
-            return res.status(200).render('render/threadTitle',thread);
+            users.checkID(req.params.id);
+            let thread = await users.getThreadId(req.params.id);
+            return res.status(200).render('render/threadId',thread);
         }catch (e){
             return res.status(400).json({error: e});
         }
     }
 })
 
-router.post('/thread/:title/comment', async(req, res) =>{
+router.post('/thread/:id/comment', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
     }
     else{
         try{
-            let title = checkStr(req.params.title);
-            let thread = await users.getThreadTitle(title);
-            return res.status(200).render('render/threadTitle',thread);
+            let data = req.body;
+            checkStr(data.text);
+            let comment = await users.postThreadComment(data.text,req.params.id,req.session.user);
+            return res.status(200).json({userName:comment.userName,comment:comment.comment});
         }catch (e){
             return res.status(400).json({error: e});
         }

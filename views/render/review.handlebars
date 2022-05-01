@@ -20,7 +20,7 @@
                 {{#each post.comments}}
                 <li>
                     {{#with this}}
-                    {{comments}}  By: <a href='/myprofile'>{{req.session.user.username}}</a>
+                    {{comments}}  By: <a href='/myprofile'>name</a>
                     {{/with}}
                 </li>
                 {{/each}}
@@ -66,5 +66,5 @@
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
     crossorigin="anonymous"></script>
-    <script src="/public/js/comment.js"></script>
+    <script src="/public/js/reviewComments.js"></script>
 </div>

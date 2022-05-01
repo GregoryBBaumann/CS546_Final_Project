@@ -229,39 +229,50 @@ async function getThreadTitle(title){
     return data;
 }
 
-async function postReviewComments(reviewId, userId, comments){
-    //checkID(reviewId);
-    //checkID(userId);
-    const commentId = new ObjectId();
-    comments = checkStr(comments, "Comment");
+async function getThreadId(id){
+    checkID(id);
+    const threadCollection = await threads();
+    const data = await threadCollection.findOne({_id: ObjectId(id)});
+    if (data === null){
+        return -1;
+    }
+    return data;
+}
+
+async function postThreadComment(comment, threadId, userId){
+    comment = checkStr(comment);
+    checkID(threadId);
+    checkID(userId);
+    userData = await getUser(userId);
+    let commentId = new ObjectId();
     let data = {
         _id: commentId,
+        userName : `${userData.firstName} ${userData.lastName}`,
+        userId: ObjectId(userId),
+        comment: comment
+    }
+    const threadCollection = await threads();
+    res = await threadCollection.updateOne({_id: ObjectId(threadId)}, {$push: {comments: data}})
+    if(!res.acknowledged || !res.modifiedCount) throw `Could not update thread`;
+    return data;
+}
+
+async function postReviewComments(reviewId, userId, comments){
+    comments = checkStr(comments, "Comments");
+    checkID(reviewId);
+    checkID(userId);
+    const commentId = new ObjectId();
+    userData = await getUser(userId);
+    let data = {
+        _id: commentId,
+        userName : `${userData.firstName} ${userData.lastName}`,
         userId: ObjectId(userId),
         comments: comments
     }
     const reviewsCollection = await reviews();
     const updateInfo = await reviewsCollection.updateOne(
         { _id: ObjectId(reviewId) },
-        { $addToSet: { comments: data } }
-    );
-    if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
-    return data;
-}
-
-async function postThreadsComments(threadId, comments){
-    //checkID(reviewId);
-    //checkID(userId);
-    comments = checkStr(comments, "Comment");
-    const commentId = new ObjectId();
-    let data = {
-        _id: commentId,
-        userId: ObjectId(userId),
-        comments: comments
-    }
-    const threadCollection = await threads();
-    const updateInfo = await threadCollection.updateOne(
-        { _id: ObjectId(threadId) },
-        { $addToSet: { comments: data } }
+        { $push: { comments: data } }
     );
     if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
     return data;
@@ -277,31 +288,21 @@ async function getAllReviewComments(id) {
     return reviews.comments;
 }
 
-async function getAllThreadsComments(id) {
-    checkID(id);
-    const threadCollection = await threads();
-    const thread = await threadCollection.findOne({ _id: ObjectId(id) });
-
-    if (!thread) throw 'Could not find thread with id of ' + id;
-
-    return thread.comments;
-}
-
-
 module.exports = {
     signUp,
     login,
     postReview,
-    getReviews,
     getAllReviews,
+    getReviews,
     getUser,
     updateUser,
     updateFriends,
     postThread,
     getAllThreads,
     getThreadTitle,
-    postThreadsComments,
     postReviewComments,
-    getAllReviewComments,
-    getAllThreadsComments
+    getThreadId,
+    checkID,
+    postThreadComment,
+    getAllReviewComments
 }
