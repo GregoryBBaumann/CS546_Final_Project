@@ -217,6 +217,32 @@ async function getThreadTitle(title){
     return data;
 }
 
+async function getThreadId(id){
+    checkID(id);
+    const threadCollection = await threads();
+    const data = await threadCollection.findOne({_id: ObjectId(id)});
+    if (data === null){
+        return -1;
+    }
+    return data;
+}
+
+async function postThreadComment(comment, threadId, userId){
+    comment = checkStr(comment);
+    checkID(threadId);
+    checkID(userId);
+    userData = await getUser(userId);
+    console.log("THISISHE")
+    let data = {
+        userName : `${userData.firstName} ${userData.lastName}`,
+        comment: comment
+    }
+    const threadCollection = await threads();
+    res = await threadCollection.updateOne({_id: ObjectId(threadId)}, {$push: {comments: data}})
+    if(!res.acknowledged || !res.modifiedCount) throw `Could not update thread`;
+    return data;
+}
+
 async function postReviewComments(reviewId, comments){
     comments = checkStr(comments, "Comment");
     let data = {
@@ -257,5 +283,8 @@ module.exports = {
     getAllThreads,
     getThreadTitle,
     postThreadsComments,
-    postReviewComments
+    postReviewComments,
+    getThreadId,
+    checkID,
+    postThreadComment
 }

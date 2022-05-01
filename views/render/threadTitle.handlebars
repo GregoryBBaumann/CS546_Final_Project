@@ -15,11 +15,22 @@
             <div>
                 <textarea name="text" id="text" cols="50" rows="7"></textarea>
             </div>
-            <button class="commentButton" id="commmentButton">Post Comment</button>
+            <button class="commentButton" id="commmentButton" type="submit">Post Comment</button>
         </form>
     </div>
     <ul class="commentsList" id="commentsLists">
+        {{#if comments}}
+            {{#each comments}}
+                <li>
+                    <h6>{{this.userName}}</h6>
+                    <p>{{this.comment}}</p>
+                </li>
+            {{/each}}
+        {{/if}}
     </ul>
     <a href="/threads">Return</a>
     <p class="threadId" id="threadId" hidden>{{_id}}</p>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+    crossorigin="anonymous"></script>
+    <script src="/public/js/threadComments.js"></script>
 </div>
