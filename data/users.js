@@ -245,18 +245,34 @@ async function postThreadComment(comment, threadId, userId){
     return data;
 }
 
+
 async function postReviewComments(reviewId, comments){
     comments = checkStr(comments, "Comment");
+
     let data = {
+        _id: commentId,
+        userName : `${userData.firstName} ${userData.lastName}`,
+        userId: ObjectId(userId),
         comments: comments
     }
     const reviewsCollection = await reviews();
     const updateInfo = await reviewsCollection.updateOne(
         { _id: ObjectId(reviewId) },
         { $addToSet: { comments: data } }
+
     );
     if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
     return data;
+}
+
+async function getAllReviewComments(id) {
+    checkID(id);
+    const reviewsCollection = await reviews();
+    const reviews = await reviewsCollection.findOne({ _id: ObjectId(id) });
+
+    if (!reviews) throw 'Could not find review with id of ' + id;
+
+    return reviews.comments;
 }
 
 module.exports = {
@@ -264,6 +280,7 @@ module.exports = {
     login,
     postReview,
     getAllReviews,
+    getReviews,
     getUser,
     updateUser,
     updateFriends,
@@ -274,4 +291,5 @@ module.exports = {
     getThreadId,
     checkID,
     postThreadComment
+
 }

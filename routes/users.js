@@ -3,6 +3,7 @@ const router = express.Router();
 const users = require('../data');
 const { checkID } = require('../data/users');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
+const { ObjectId } = require('mongodb');
 
 router.get('/', async(req, res) =>{
     if(req.session.user){
@@ -137,6 +138,20 @@ router.get('/review/:idNumber', async(req, res) => {
     reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
     //let userId = ObjectId(req.session.user.userid).toString();
     res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
+});
+
+router.post('/review/newComment', async(req, res) => {
+    try {
+        let userId = ObjectId(req.session.user).toString();
+        let newComment = await users.postReviewComments(ObjectId(req.body.postId).toString(), userId, req.body.comment);
+        if (newComment) {
+            res.json({ status: 'ok' });
+        }
+    } catch (e) {
+        console.log("Error: " + e)
+        res.status(404);
+       // res.render('render/error');
+    }
 });
 
 
