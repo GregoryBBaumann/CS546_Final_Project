@@ -130,6 +130,15 @@ router.get('/getallreviews', async(req, res) =>{
     }
 })
 
+router.get('/review/:idNumber', async(req, res) => {
+    let reviewPost = await users.getReviews(req.params.idNumber);
+    const title = reviewPost.name;
+    reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
+    //let userId = ObjectId(req.session.user.userid).toString();
+    res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
+});
+
+
 router.get('/userinfo/*', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
