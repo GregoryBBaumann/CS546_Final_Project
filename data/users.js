@@ -114,18 +114,6 @@ async function getAllReviews(){
     return data;
 }
 
-async function getReviews(id) {
-    checkID(id);
-    if (id === undefined) throw 'You must provide an ID';
-    const reviewsCollection = await reviews();
-    const review = await reviewsCollection.findOne({ _id: ObjectId(id) });
-
-    if (!review) throw 'Could not find post with id of ' + id;
-    let updatedIdReview = review;
-    updatedIdReview._id = ObjectId(updatedIdReview._id).toString();
-    return updatedIdReview;
-}
-
 async function updateUser(updateParams, id){
     const names = {
         firstName: "First Name",
@@ -244,9 +232,11 @@ async function postThreadComment(comment, threadId, userId){
     checkID(threadId);
     checkID(userId);
     userData = await getUser(userId);
-    console.log("THISISHE")
+    let commentId = new ObjectId();
     let data = {
+        _id: commentId,
         userName : `${userData.firstName} ${userData.lastName}`,
+        userId: ObjectId(userId),
         comment: comment
     }
     const threadCollection = await threads();
@@ -269,25 +259,10 @@ async function postReviewComments(reviewId, comments){
     return data;
 }
 
-async function postThreadsComments(threadId, comments){
-    comments = checkStr(comments, "Comment");
-    let data = {
-        comments: comments
-    }
-    const threadCollection = await threads();
-    const updateInfo = await threadCollection.updateOne(
-        { _id: ObjectId(threadId) },
-        { $addToSet: { comments: data } }
-    );
-    if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
-    return data;
-}
-
 module.exports = {
     signUp,
     login,
     postReview,
-    getReviews,
     getAllReviews,
     getUser,
     updateUser,
@@ -295,7 +270,6 @@ module.exports = {
     postThread,
     getAllThreads,
     getThreadTitle,
-    postThreadsComments,
     postReviewComments,
     getThreadId,
     checkID,
