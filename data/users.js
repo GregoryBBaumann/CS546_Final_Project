@@ -275,6 +275,19 @@ async function getAllReviewComments(id) {
     return reviews.comments;
 }
 
+
+async function getReviews(id) {
+    checkID(id);
+    if (id === undefined) throw 'You must provide an ID';
+    const reviewsCollection = await reviews();
+    const review = await reviewsCollection.findOne({ _id: ObjectId(id) });
+
+    if (!review) throw 'Could not find post with id of ' + id;
+    let updatedIdReview = review;
+    updatedIdReview._id = ObjectId(updatedIdReview._id).toString();
+    return updatedIdReview;
+}
+
 module.exports = {
     signUp,
     login,
