@@ -328,7 +328,7 @@ router.get('/thread/:id', async(req, res) =>{
         try{
             users.checkID(req.params.id);
             let thread = await users.getThreadId(req.params.id);
-            return res.status(200).render('render/threadTitle',thread);
+            return res.status(200).render('render/threadId',thread);
         }catch (e){
             return res.status(400).json({error: e});
         }
@@ -342,7 +342,6 @@ router.post('/thread/:id/comment', async(req, res) =>{
     else{
         try{
             let data = req.body;
-            console.log(data);
             checkStr(data.text);
             let comment = await users.postThreadComment(data.text,req.params.id,req.session.user);
             return res.status(200).json({userName:comment.userName,comment:comment.comment});
