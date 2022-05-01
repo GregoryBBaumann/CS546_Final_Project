@@ -229,9 +229,14 @@ async function getThreadTitle(title){
     return data;
 }
 
-async function postReviewComments(reviewId, comments){
+async function postReviewComments(reviewId, userId, comments){
+    //checkID(reviewId);
+    //checkID(userId);
+    const commentId = new ObjectId();
     comments = checkStr(comments, "Comment");
     let data = {
+        _id: commentId,
+        userId: ObjectId(userId),
         comments: comments
     }
     const reviewsCollection = await reviews();
@@ -244,8 +249,13 @@ async function postReviewComments(reviewId, comments){
 }
 
 async function postThreadsComments(threadId, comments){
+    //checkID(reviewId);
+    //checkID(userId);
     comments = checkStr(comments, "Comment");
+    const commentId = new ObjectId();
     let data = {
+        _id: commentId,
+        userId: ObjectId(userId),
         comments: comments
     }
     const threadCollection = await threads();
@@ -256,6 +266,27 @@ async function postThreadsComments(threadId, comments){
     if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
     return data;
 }
+
+async function getAllReviewComments(id) {
+    checkID(id);
+    const reviewsCollection = await reviews();
+    const reviews = await reviewsCollection.findOne({ _id: ObjectId(id) });
+
+    if (!reviews) throw 'Could not find review with id of ' + id;
+
+    return reviews.comments;
+}
+
+async function getAllThreadsComments(id) {
+    checkID(id);
+    const threadCollection = await threads();
+    const thread = await threadCollection.findOne({ _id: ObjectId(id) });
+
+    if (!thread) throw 'Could not find thread with id of ' + id;
+
+    return thread.comments;
+}
+
 
 module.exports = {
     signUp,
@@ -270,5 +301,7 @@ module.exports = {
     getAllThreads,
     getThreadTitle,
     postThreadsComments,
-    postReviewComments
+    postReviewComments,
+    getAllReviewComments,
+    getAllThreadsComments
 }

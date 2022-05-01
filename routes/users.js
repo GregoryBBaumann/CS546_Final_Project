@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const users = require('../data');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
+const { ObjectId } = require('mongodb');
 
 router.get('/', async(req, res) =>{
     if(req.session.user){
@@ -131,11 +132,34 @@ router.get('/getallreviews', async(req, res) =>{
 })
 
 router.get('/review/:idNumber', async(req, res) => {
-    let reviewPost = await users.getReviews(req.params.idNumber);
-    const title = reviewPost.name;
-    reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
-    //let userId = ObjectId(req.session.user.userid).toString();
-    res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            let reviewPost = await users.getReviews(req.params.idNumber);
+            const title = reviewPost.name;
+            reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
+            res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
+        } catch(e){
+            return res.status(400).json({error: e});
+        }
+    }
+});
+
+
+router.post('/review/newComment', async(req, res) => {
+    try {
+        let userId = ObjectId(req.session.user.userid).toString();
+        let newComment = await users.postReviewComments(ObjectId(req.body.postId).toString(), userId, req.body.comment);
+        if (newComment) {
+            res.json({ status: 'ok' });
+        }
+    } catch (e) {
+        console.log("Error: " + e)
+        res.status(404);
+       // res.render('render/error');
+    }
 });
 
 
