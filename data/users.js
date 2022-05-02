@@ -245,26 +245,6 @@ async function postThreadComment(comment, threadId, userId){
     return data;
 }
 
-
-async function postReviewComments(reviewId, comments){
-    comments = checkStr(comments, "Comment");
-
-    let data = {
-        _id: commentId,
-        userName : `${userData.firstName} ${userData.lastName}`,
-        userId: ObjectId(userId),
-        comments: comments
-    }
-    const reviewsCollection = await reviews();
-    const updateInfo = await reviewsCollection.updateOne(
-        { _id: ObjectId(reviewId) },
-        { $addToSet: { comments: data } }
-
-    );
-    if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
-    return data;
-}
-
 async function getAllReviewComments(id) {
     checkID(id);
     const reviewsCollection = await reviews();
@@ -288,6 +268,29 @@ async function getReviews(id) {
     return updatedIdReview;
 }
 
+async function postReviewComments(reviewId, userId, comments){
+    comments = checkStr(comments, "Comment");
+    checkID(reviewId);
+    checkID(userId);
+    userData = await getUser(userId);
+    let commentId = new ObjectId();
+    let data = {
+        _id: commentId,
+        userName : `${userData.firstName} ${userData.lastName}`,
+        userId: ObjectId(userId),
+        comments: comments
+    }
+    const reviewsCollection = await reviews();
+    const updateInfo = await reviewsCollection.updateOne(
+        { _id: ObjectId(reviewId) },
+        { $push: { comments: data } }
+
+    );
+    if (!updateInfo.matchedCount && !updateInfo.modifiedCount) throw 'Update failed';
+    return data;
+}
+
+
 module.exports = {
     signUp,
     login,
@@ -301,8 +304,8 @@ module.exports = {
     getAllThreads,
     getThreadTitle,
     postReviewComments,
+    getAllReviewComments,
     getThreadId,
     checkID,
     postThreadComment
-
 }
