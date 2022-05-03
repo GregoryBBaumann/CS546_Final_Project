@@ -46,7 +46,7 @@
             name = fr[this];
             id = this;
             elem = `<tr id='${id}'><td><a href='/userinfo/${id}'>${name}</a></td><td><button class='btn accept' value='${id}'>Accept</button></td><td><button class='btn decline' value='${id}'>Decline</button></td><tr>`;
-            displayReq.append(elem);
+            displayReq.prepend(elem);
         })
 
         $('button.accept').on('click', function(){

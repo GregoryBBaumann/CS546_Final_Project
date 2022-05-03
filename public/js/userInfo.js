@@ -1,12 +1,14 @@
 (function ($){
     var userInfo = $('#userInfo');
     var userInfoDiv = $('#userInfoDiv');
+    var userName = $('#userName');
     var userInfoID = $('#userID');
     var userBio = $('#userBio');
     var userPosts = $('#userPosts');
     var userBioClick = $('#userBioClick');
     var userPostsClick = $('#userPostsClick');
     var userLikedClick = $('#userLikedClick');
+    var blockClick = $('#blockClick');
     var friendReqBtn = $('#friendReqBtn');
     var decline = $('#decline');
     var status = $('#status');
@@ -23,12 +25,15 @@
         return `<div>${title}${category}${rating}${review}${postedDate}${vote}${name}<div>`;
     }
 
+    function onLoad(){
+        userInfoID.hide();
+        userBio.hide();
+        userPosts.hide();
+        userLikedClick.hide();
+        decline.hide();
+    }
 
-    userInfoID.hide();
-    userBio.hide();
-    userPosts.hide();
-    userLikedClick.hide();
-    decline.hide();
+    onLoad();
 
     let a = userInfoID.text();
     var userInfoReq = {
@@ -38,28 +43,49 @@
     $.ajax(userInfoReq).then(function(res){
         let {data, currUser} = res;
         if(data._id === currUser._id){
+            blockClick.hide();
+            status.hide();
             friendReqBtn.hide();
             userLikedClick.show();
         }
 
+        // block stuff
+        if(data._id in currUser.blockedUsers){
+            userName.text(`You have blocked ${data.firstName} ${data.lastName}`);
+            blockClick.text("Unblock User");
+            status.hide();
+            friendReqBtn.hide();
+            userBioClick.hide();
+            userPostsClick.hide();
+        }
+        else if(currUser._id in data.blockedUsers){
+            userName.innerHTML = "User Not Found";
+            status.show();
+            friendReqBtn.show();
+            userBioClick.show();
+            userPostsClick.show();
+        }
+
+        else{
         // friend stuff
-        if(!(data._id in currUser.friends) && !(data._id in currUser.friendReqSent) && !(data._id in currUser.friendReq)){
-            status.text(`Add ${data.firstName} ${data.lastName} as a friend to see the posts liked by them`);
-            friendReqBtn.html("Add Friend");
-        }
-        else if(data._id in currUser.friends){
-            status.text(`You are friends with ${data.firstName} ${data.lastName}`);
-            userLikedClick.show();
-            friendReqBtn.html("Unfriend");
-        }
-        else if(data._id in currUser.friendReqSent){
-            status.text(`Friend request sent to ${data.firstName} ${data.lastName}`);
-            friendReqBtn.html("Pending");
-        }
-        else if(data._id in currUser.friendReq){
-            status.text(`${data.firstName} ${data.lastName} wants to be your friend`);
-            friendReqBtn.html("Accept");
-            decline.show();
+            if(!(data._id in currUser.friends) && !(data._id in currUser.friendReqSent) && !(data._id in currUser.friendReq)){
+                status.text(`Add ${data.firstName} ${data.lastName} as a friend to see the posts liked by them`);
+                friendReqBtn.html("Add Friend");
+            }
+            else if(data._id in currUser.friends){
+                status.text(`You are friends with ${data.firstName} ${data.lastName}`);
+                userLikedClick.show();
+                friendReqBtn.html("Unfriend");
+            }
+            else if(data._id in currUser.friendReqSent){
+                status.text(`Friend request sent to ${data.firstName} ${data.lastName}`);
+                friendReqBtn.html("Pending");
+            }
+            else if(data._id in currUser.friendReq){
+                status.text(`${data.firstName} ${data.lastName} wants to be your friend`);
+                friendReqBtn.html("Accept");
+                decline.show();
+            }
         }
 
         decline.on('click', function(){
@@ -128,6 +154,65 @@
             $.ajax(friendPOST).then(function(){
                 $.ajax(friend2POST).then(function(){
                 })
+            })
+        })
+
+        // block user
+        blockClick.on('click', function(event){
+            event.preventDefault();
+            let flag = 0;
+            if(!(data._id in currUser.blockedUsers)){
+                flag = 1;
+                if(data._id in currUser.friendReqSent){
+                    delete currUser.friendReqSent[data._id];
+                    delete data.friendReq[currUser._id];
+                }
+                if(data._id in currUser.friendReq){
+                    delete currUser.friendReq[data._id];
+                    delete data.friendReqSent[currUser._id];
+                }
+                if(data._id in currUser.friends){
+                    delete currUser.friends[data._id];
+                    delete data.friends[currUser._id];
+                }
+                currUser.blockedUsers[data._id] = `${data.firstName} ${data.lastName}`;
+                this.innerHTML = "Unblock User";
+                userName.text(`You have blocked ${data.firstName} ${data.lastName}`);
+                blockClick.text("Unblock User");
+                decline.hide();
+                status.hide();
+                friendReqBtn.hide();
+                userBioClick.hide();
+                userPostsClick.hide();
+            }
+            else if(data._id in currUser.blockedUsers){
+                delete currUser.blockedUsers[data._id];
+                this.innerHTML = "Block User";
+                userName.text(`${data.firstName} ${data.lastName}`);
+                status.text(`Add ${data.firstName} ${data.lastName} as a friend to see the posts liked by them`);
+                friendReqBtn.text("Add Friend");
+                status.show();
+                friendReqBtn.show();
+                userBioClick.show();
+                userPostsClick.show();
+            }
+
+            var updateBlock = {
+                method: 'POST',
+                url: '/updatefriends',
+                data: currUser
+            };
+            var updateBlock2 = {
+                method: 'POST',
+                url: '/updatefriends',
+                data: data
+            };
+            $.ajax(updateBlock).then(function(){
+                if(flag == 1){
+                    $.ajax(updateBlock2).then(function(){
+
+                    })
+                }
             })
         })
 

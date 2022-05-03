@@ -1,11 +1,11 @@
 <div id="userInfo">
     <h1 id="userID">{{data._id}}</h1>
-    <h1>
+    <h1 id="userName">
         {{data.firstName}} {{data.lastName}}
     </h1>
 
     <h2 id="status">
-        
+        {{error}}
     </h2>
 
     <button class="btn" id="friendReqBtn">Add Friend</button>
@@ -15,6 +15,7 @@
         <a href="" id="userBioClick">User Information</a>
         <a href="" id="userPostsClick">User Posts</a>
         <a href="" id="userLikedClick">Liked by User</a>
+        <a href="" id="blockClick">Block User</a>
     </div>
 
     <div id="userBio">
