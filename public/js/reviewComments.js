@@ -1,5 +1,5 @@
 (function ($) {
-    $('#commentForm').submit((event) => {
+    $('#comment').submit((event) => {
         try {
             event.preventDefault();
             if ($('#commentInput').val().trim()) {
@@ -29,7 +29,7 @@
                 $('#errorMsg').text("Please input comment");
             }
         } catch (error) {
-            console.log("Error: " + error)
+            return res.status(400).json({error: e});
         }
     });
 })(jQuery);

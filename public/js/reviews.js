@@ -21,7 +21,7 @@
         return `<div>${title}${category}${rating}${review}${postedDate}${vote}${name}<div>`;
     }
 
-    async function addReviews(a){
+  /*  async function addReviews(a){
         let title = a.title;
         let id = a._id;
         var info = {
@@ -45,26 +45,23 @@
                 addReviews(this);
             })
         });
-    });
+    });*/
 
-    function populate(){
-        var populateFeed = {
+
+    $(function () {
+        var requestConfig = {
             method: 'GET',
             url: '/getallreviews'
-        }
-        $.ajax(populateFeed).then(function(res){
-            $.each(res, function(){
-                let rev = makeReview(this);
-                feed.prepend(rev);
-            })
-        })
-    }
-/*
-    if(newPostForm.length){
-        populate();
-        reviewComment.show();
-    }
-*/
+        };
+        $.ajax(requestConfig).then(function (responseMessage) {
+            console.log(responseMessage);
+            for (i in responseMessage) {
+                let title = responseMessage[i].title;
+                let id = responseMessage[i]._id;
+                reviewList.append(`<li><a href='/review/${id}'> ${title} </a> </li>`);
+            }
+        });
+    });
 
 
     newPostForm.submit(function (event){
@@ -79,7 +76,7 @@
             review : reviewVal,
             postedDate : date,
             rating : ratingVal,
-            vote : 0,
+            likes : [],
             comments: []
         }
         var postReview = {
