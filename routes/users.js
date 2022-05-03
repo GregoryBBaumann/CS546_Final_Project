@@ -133,35 +133,24 @@ router.get('/getallreviews', async(req, res) =>{
 })
 
 router.get('/review/:idNumber', async(req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        try{
-            let reviewPost = await users.getReviews(req.params.idNumber);
-            const title = reviewPost.name;
-            reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
-            res.render('render/review', { title: title, post: reviewPost, reviewId: req.params.idNumber});
-        } catch (e){
-            return res.status(400).json({error: e});
-        }
-    }
+    let reviewPost = await users.getReviews(req.params.idNumber);
+    const title = reviewPost.name;
+    reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
+    //let userId = ObjectId(req.session.user.userid).toString();
+    res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
 });
 
 router.post('/review/newComment', async(req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        try {
-            let userId = ObjectId(req.session.user).toString();
-            let newComment = await users.postReviewComments(ObjectId(req.body.postId).toString(), userId, req.body.comment);
-            if (newComment) {
-                res.json({ status: 'ok' });
-            }
-        } catch (e) {
-            return res.status(400).json({error: e});
+    try {
+        let userId = ObjectId(req.session.user).toString();
+        let newComment = await users.postReviewComments(ObjectId(req.body.postId).toString(), userId, req.body.comment);
+        if (newComment) {
+            res.json({ status: 'ok' });
         }
+    } catch (e) {
+        console.log("Error: " + e)
+        res.status(404);
+       // res.render('render/error');
     }
 });
 
@@ -180,7 +169,7 @@ router.get('/userinfo/*', async(req, res) =>{
             currUser: currUserData
         };
         res.render('render/userInfo', userInfo);
-        } catch(e){
+        }catch(e){
             return res.status(400).json({error: e});
         }
     }
@@ -200,7 +189,7 @@ router.post('/userinfo/*', async(req, res) =>{
             currUser: currUserData
         };
         return res.status(200).json(userInfo);
-        } catch(e){
+        }catch(e){
             return res.status(400).json({error: e});
         }
     }
@@ -376,39 +365,5 @@ router.post('/thread/:id/comment', async(req, res) =>{
         }
     }
 })
-
-router.post('/review/like', async(req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        try {
-            let userId = ObjectId(req.session.user).toString();
-            let newLike = await users.createReviewLike(ObjectId(req.body.reviewId).toString(), userId);
-            if (newLike) {
-                res.json({ status: 'ok' });
-            } 
-        } catch (e) {
-            return res.status(400).json({error: e});
-        }
-    }
-});
-
-router.post('/review/dislike', async(req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        try {
-            let userId = ObjectId(req.session.user).toString();
-            let newDislike = await users.removeReviewLike(ObjectId(req.body.reviewId).toString(), userId);
-            if (newDislike) {
-                res.json({ status: 'removed' });
-            }
-        } catch (e) {
-            return res.status(400).json({error: e});
-        }
-    }
-});
 
 module.exports = router;

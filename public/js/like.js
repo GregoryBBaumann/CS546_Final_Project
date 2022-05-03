@@ -1,57 +1,33 @@
-(function ($) {
-    $('#like').submit((event) => {
-        try {
-            event.preventDefault()
-            let reviewId = $('#likeId').val();
-            let newLike = {
-                reviewId: reviewId
-            }
-
-            let likeRequest = {
-                method: 'POST',
-                url: '/review/like',
-                data: newLike
-            };
-
-            $.ajax(likeRequest).then(function (responseMessage) {
-                let response = $(responseMessage);
-                let status = response[0].status;
-                if (status === 'ok') { 
-                    window.location.href = '/review/' + reviewId;
-                } else {
-                    return res.status(400).json({error: "Fail to create"});
-                }
-            });
-        } catch (e) {
-            return res.status(400).json({error: e});
-        }
-    });
-
-    $('#dislike').submit((event) => {
-        try {
-            event.preventDefault();
-            let reviewId = $('#dislikeId').val();
-            let newDisike = {
-                reviewId: reviewId
-            }
-            let likeRequest = {
-                method: 'POST',
-                url: '/review/dislike',
-                data: newDisike
-            };
-
-            $.ajax(likeRequest).then(function (responseMessage) {
-                let response = $(responseMessage);
-                let status = response[0].status;
-                if (status === 'removed') { 
-                    window.location.href = '/review/' + reviewId;
-                } else {
-                    return res.status(400).json({error: "Fail to delete"});
-                }
-            });
-        } catch (e) {
-            return res.status(400).json({error: e});
-        }
-    });
-
-})(jQuery);
+var like = document.getElementById('like'); 
+var dislike = document.getElementById('dislike'); 
+var num1 = document.getElementById('num1'); 
+var num2 = document.getElementById('num2'); 
+var flag1 = 0; 
+var flag2 = 0; 
+like.onclick = function() { 
+    if (flag1 == 0) {
+        num1.innerHTML++; 
+    } 
+    if (flag1 == 1) { 
+        num1.innerHTML--; 
+    } 
+    if (flag1 == 2) { 
+        num1.innerHTML++; 
+        flag1 = 0; 
+    } 
+    flag1++; 
+} 
+ 
+dislike.onclick = function() { 
+    if (flag2 == 0) { 
+        num2.innerHTML++; 
+    } 
+    if (flag2 == 1) { 
+       num2.innerHTML--; 
+    } 
+    if (flag2 == 2) { 
+        num2.innerHTML++; 
+        flag2 = 0; 
+    } 
+    flag2++; 
+} 
