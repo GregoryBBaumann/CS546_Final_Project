@@ -78,7 +78,7 @@
             review : reviewVal,
             postedDate : date,
             rating : ratingVal,
-            vote : 0,
+            likes : [],
             comments: []
         }
         var postReview = {
