@@ -250,7 +250,7 @@ async function getAllReviewComments(id) {
     const reviewsCollection = await reviews();
     const reviews = await reviewsCollection.findOne({ _id: ObjectId(id) });
 
-    if (!reviews) throw 'Fail to find review of ' + id;
+    if (!reviews) throw 'Could not find review with id of ' + id;
 
     return reviews.comments;
 }
@@ -262,7 +262,7 @@ async function getReviews(id) {
     const reviewsCollection = await reviews();
     const review = await reviewsCollection.findOne({ _id: ObjectId(id) });
 
-    if (!review) throw 'Fail to find ' + id;
+    if (!review) throw 'Could not find post with id of ' + id;
     let updatedIdReview = review;
     updatedIdReview._id = ObjectId(updatedIdReview._id).toString();
     return updatedIdReview;
@@ -291,68 +291,6 @@ async function postReviewComments(reviewId, userId, comments){
 }
 
 
-async function  createReviewLike(reviewId, userId) {
-    checkID(reviewId);
-    checkID(userId);
-
-    let liked = await getLikeByUserId(reviewId, userId);
-    if (liked !== null) throw 'Can only like one time';
-    userData = await getUser(userId);
-    const likeId = new ObjectId();
-    let newLike = {
-        _id: likeId,
-        userName : `${userData.firstName} ${userData.lastName}`,
-        userId: ObjectId(userId)
-    };
-
-    const reviewsCollection = await reviews();
-    const updatedInfo = await reviewsCollection.updateOne(
-        { _id: ObjectId(reviewId) },
-        { $push: { "likes": newLike } }
-    );
-    if (updatedInfo.modifiedCount === 0) {
-        throw 'Update failed';
-    }
-
-    const reviewInfo = await getReviews(reviewId);
-    return reviewInfo;
-}
-
-async function  getAllReviewLike(reviewId) {
-    checkID(reviewId);
-    const reviewsCollection = await reviews();
-    const review = await reviewsCollection.findOne({ _id: ObjectId(reviewId) });
-    if (!review) throw 'Can not find like for ' + reviewId;
-    return review.likes;
-}
-
-async function  getLikeByUserId(reviewId, userId) {
-    checkID(reviewId);
-    checkID(userId);
-    const reviewsCollection = await reviews();
-    const like = await reviewsCollection.findOne({ _id: ObjectId(reviewId), 'likes.userId': ObjectId(userId) });
-    return like;
-}
-
-async function  removeReviewLike(reviewId, userId) {
-    checkID(reviewId);
-    checkID(userId);
-    const reviewsCollection = await reviews();
-
-    let liked = await getLikeByUserId(reviewId, userId);
-    if (liked === null) throw 'Can not find like in this review';
-
-    const deletionInfo = await reviewsCollection.updateOne(
-        { _id: ObjectId(reviewId), 'likes.userId': ObjectId(userId) },
-        { $pull: { "likes": { "userId": ObjectId(userId) } } }
-    );
-
-    if (deletionInfo.modifiedCount === 0) throw `Can not delete like for ${userId}`;
-    return true;
-}
-
-
-
 module.exports = {
     signUp,
     login,
@@ -367,10 +305,6 @@ module.exports = {
     getThreadTitle,
     postReviewComments,
     getAllReviewComments,
-    createReviewLike,
-    removeReviewLike,
-    getAllReviewLike,
-    getLikeByUserId,
     getThreadId,
     checkID,
     postThreadComment
