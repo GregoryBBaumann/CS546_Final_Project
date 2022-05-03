@@ -1,9 +1,7 @@
 <div class="row">
-    <h1 class="main-text">{{title}}</h1>
+    <h1 class="main-text">{{post.title}}</h1>
     <main>
         <dl>
-            <dt>Title</dt>
-            <dd>{{post.title}}</dd>
             <dt>Posted Date</dt>
             <dd>{{post.postedDate}}</dd>               
             <dt>Category</dt>
@@ -12,6 +10,8 @@
             <dd>{{post.rating}}</dd>
             <dt>Review</dt>
             <dd>{{post.review}}</dd>
+            <dt>Posted By</dt>
+            <dd><a href="/userinfo/{{userID}}">{{userName}}</a></dd>
         </dl>
 
         <div id='preComments'>

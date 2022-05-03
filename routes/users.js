@@ -4,6 +4,7 @@ const users = require('../data');
 const { checkID } = require('../data/users');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 const { ObjectId } = require('mongodb');
+const { status } = require('express/lib/response');
 
 router.get('/', async(req, res) =>{
     if(req.session.user){
@@ -134,10 +135,9 @@ router.get('/getallreviews', async(req, res) =>{
 
 router.get('/review/:idNumber', async(req, res) => {
     let reviewPost = await users.getReviews(req.params.idNumber);
-    const title = reviewPost.name;
+    const userName = reviewPost.name;
     reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
-    //let userId = ObjectId(req.session.user.userid).toString();
-    res.render('render/review', { title: title, post: reviewPost, postId: req.params.idNumber});
+    res.render('render/review', { userName: userName, post: reviewPost, postId: req.params.idNumber, userID: reviewPost.userID});
 });
 
 router.post('/review/newComment', async(req, res) => {
@@ -170,7 +170,7 @@ router.get('/userinfo/*', async(req, res) =>{
         };
         res.render('render/userInfo', userInfo);
         }catch(e){
-            return res.status(400).json({error: e});
+            return res.status(400).render('render/userNotFound');
         }
     }
 })
@@ -190,7 +190,7 @@ router.post('/userinfo/*', async(req, res) =>{
         };
         return res.status(200).json(userInfo);
         }catch(e){
-            return res.status(400).json({error: e});
+            return res.status(400).json({error: `User not found`});
         }
     }
 })
@@ -275,7 +275,6 @@ router.post('/updatefriends', async(req, res) =>{
     }
     else{
         let result = await users.updateFriends(req.body);
-        if(!(result.acknowledged) || !(result.modifiedCount)) return res.status(500).json("Server Error");
         return res.status(200).json("Success");
     }
 })
@@ -363,6 +362,21 @@ router.post('/thread/:id/comment', async(req, res) =>{
         }catch (e){
             return res.status(400).json({error: e});
         }
+    }
+})
+
+router.get('/blockedusers', async(req, res) =>{
+    if(!req.session.user) return res.redirect('/');
+    else return res.status(200).render('render/blockedusers', {});
+})
+
+router.get('/getinfo', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        const data = await users.getUser(req.session.user);
+        return res.status(200).json(data);
     }
 })
 

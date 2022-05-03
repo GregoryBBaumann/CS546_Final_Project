@@ -167,6 +167,7 @@ async function updateFriends(data){
     if(!("friendReqSent" in data)) data["friendReqSent"] = {};
     if(!("friendReq" in data)) data["friendReq"] = {};
     if(!("friends" in data)) data["friends"] = {};
+    if(!("blockedUsers" in data)) data["blockedUsers"] = {};
     const userCollection = await users();
     let id = data._id;
     delete data._id;

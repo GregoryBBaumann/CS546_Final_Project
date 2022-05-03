@@ -20,3 +20,12 @@ chk.addEventListener('change', (event) => {
 //     }
 // })(window.jQuery);
 
+// DO NOT DELETE THIS!!!!!!!!!!!!!!!
+
+(function ($){
+    var login = $('#login-form');
+    var signup = $('#signup-form');
+    var home = $('#home');
+    var nav = $('#nav');
+    if(login.length || signup.length || home.length) nav.hide();
+})(window.jQuery);
