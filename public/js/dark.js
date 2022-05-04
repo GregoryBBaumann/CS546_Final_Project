@@ -1,24 +1,30 @@
 const chk = document.getElementById('chk');
+let change = true;
+let start = false;
 
-chk.addEventListener('change', (event) => {
+chk.addEventListener('change', () => {
     event.preventDefault();
-    document.body.classList.toggle('dark');
+    start = true;
+    if(localStorage["bool"] == "true") {
+        document.body.classList.toggle('dark');
+        localStorage["bool"]  = null;
+        localStorage["theme"] = null;
+    } else {
+        localStorage["theme"] = "isdark";
+        document.body.classList.toggle('dark');
+        localStorage["bool"] = "true"
+
+    }
 });
 
-// $(function(){
-//     var test = localStorage.input === 'true'? true: false;
-//     $('input').prop('checked', test || false);
-// });
-
-// $('input').on('change', function() {
-//     localStorage.input = $(this).is(':checked');
-// });
-
-// window.addEventListener("beforeunload", function(event) { 
-//     if (this.localStorage.input) {
-//         document.body.classList.toggle('dark');
-//     }
-// })(window.jQuery);
+$(function(){
+    if(localStorage["theme"] == "isdark") {
+        document.body.classList.toggle('dark');
+        chk.checked = true;
+    } else {
+        chk.checked = false;
+    }
+});
 
 // DO NOT DELETE THIS!!!!!!!!!!!!!!!
 
