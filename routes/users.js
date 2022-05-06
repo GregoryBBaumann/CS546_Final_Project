@@ -5,6 +5,7 @@ const { checkID } = require('../data/users');
 const { checkStr, checkEMail, checkNum, checkPassword, isPresent, checkAge, checkRating } = require('../errorHandling');
 const { ObjectId } = require('mongodb');
 const { status } = require('express/lib/response');
+const xss = require('xss');
 
 router.get('/', async(req, res) =>{
     if(req.session.user){
@@ -57,7 +58,7 @@ router.post('/signup', async(req, res) =>{
     if(req.session.user){
         return res.redirect('/');
     }
-    let {firstName, lastName, email, password, confirmPassword, gender, city, state, age} = req.body;
+    let {firstName, lastName, email, password, confirmPassword, gender, city, state, age} = xss(req.body);
     try{
         firstName = checkStr(firstName, "First Name");
         lastName = checkStr(lastName, "Last Name");
@@ -105,7 +106,7 @@ router.post('/postreview', async(req, res) =>{
         return res.redirect('/');
     }
     else{
-        let data = req.body;
+        let data = xss(req.body);
         let {title, category, review, rating} = data;
         data.userID = req.session.user;
         // error checking
@@ -156,7 +157,7 @@ router.post('/review/newComment', async(req, res) => {
     else{
         try {
             let userId = ObjectId(req.session.user).toString();
-            let newComment = await users.postReviewComments(ObjectId(req.body.postId).toString(), userId, req.body.comment);
+            let newComment = await users.postReviewComments(ObjectId(xss(req.body.postId)).toString(), userId, xss(req.body.comment));
             if (newComment) {
                 res.json({ status: 'ok' });
             }
@@ -221,7 +222,7 @@ router.post('/editprofile', async(req, res) =>{
         return res.redirect('/');
     }
 
-    let {firstName, lastName, email, password, confirmPassword, gender, city, state, age} = req.body;
+    let {firstName, lastName, email, password, confirmPassword, gender, city, state, age} = xss(req.body);
     let updateParams = {};
     try{
         if(firstName.length !== 0){
@@ -286,7 +287,7 @@ router.post('/updatefriends', async(req, res) =>{
         return res.status(401);
     }
     else{
-        let result = await users.updateFriends(req.body);
+        let result = await users.updateFriends(xss(req.body));
         return res.status(200).json("Success");
     }
 })
@@ -325,7 +326,7 @@ router.post('/threads', async(req, res) =>{
     }
     else {
 
-        let data = req.body;
+        let data = xss(req.body);
         userID = req.session.user;
         // error checking
         try{
@@ -367,7 +368,7 @@ router.post('/thread/:id/comment', async(req, res) =>{
     }
     else{
         try{
-            let data = req.body;
+            let data = xss(req.body);
             checkStr(data.text);
             let comment = await users.postThreadComment(data.text,req.params.id,req.session.user);
             return res.status(200).json({userName:comment.userName,comment:comment.comment});
@@ -399,7 +400,7 @@ router.post('/review/like', async(req, res) => {
     else{
         try {
             let userId = ObjectId(req.session.user).toString();
-            let newLike = await users.createReviewLike(ObjectId(req.body.reviewId).toString(), userId);
+            let newLike = await users.createReviewLike(ObjectId(xss(req.body.reviewId)).toString(), userId);
             if (newLike) {
                 res.json({ status: 'ok' });
             } 
@@ -416,7 +417,7 @@ router.post('/review/dislike', async(req, res) => {
     else{
         try {
             let userId = ObjectId(req.session.user).toString();
-            let newDislike = await users.removeReviewLike(ObjectId(req.body.reviewId).toString(), userId);
+            let newDislike = await users.removeReviewLike(ObjectId(xss(req.body.reviewId)).toString(), userId);
             if (newDislike) {
                 res.json({ status: 'removed' });
             }
