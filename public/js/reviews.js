@@ -10,15 +10,14 @@
 
 
     function makeReview(data){
-        let{title, category, rating, review, postedDate, vote, name, userID} = data;
+        let{title, category, rating, review, postedDate, name, userID, likes} = data;
         title = `<h1>${title}</h1>`;
         category = `<h2>${category}</h2>`;
         rating = `<h2>${rating}</h2>`;
         review = `<p>${review}</p>`;
         postedDate = `<h3>${postedDate}</h3>`;
-        vote = `<h3>${vote}</h3>`;
         name = `<h3><a href = '/userinfo/${userID}'>${name}</h3>`;
-        return `<div>${title}${category}${rating}${review}${postedDate}${vote}${name}<div>`;
+        return `<div>${title}${category}${rating}${review}${postedDate}${name}<div>`;
     }
 
   /*  async function addReviews(a){
@@ -76,7 +75,7 @@
             review : reviewVal,
             postedDate : date,
             rating : ratingVal,
-            likes : [],
+            likes : new Set([]),
             comments: []
         }
         var postReview = {
