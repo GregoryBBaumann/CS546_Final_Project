@@ -20,7 +20,7 @@
         return `<div>${title}${category}${rating}${review}${postedDate}${name}<div>`;
     }
 
-  /*  async function addReviews(a){
+    async function addReviews(a){
         let title = a.title;
         let id = a._id;
         var info = {
@@ -29,7 +29,9 @@
         };
         await $.ajax(info).then(function(res){
             const {data, currUser} = res;
-            if(!(data._id in currUser.blockedUsers) && !(currUser._id in data.blockedUsers)) reviewList.append(`<li><a href='/review/${id}'> ${title} </a> </li>`);
+            if(!(data._id in currUser.blockedUsers) && !(currUser._id in data.blockedUsers)){
+                feed.prepend(makeReview(a));
+            };
         })
     }
 
@@ -39,26 +41,9 @@
             url: '/getallreviews'
         };
         $.ajax(requestConfig).then(function (responseMessage) {
-            let c = 0;
             $.each(responseMessage, function(){
                 addReviews(this);
             })
-        });
-    });*/
-
-
-    $(function () {
-        var requestConfig = {
-            method: 'GET',
-            url: '/getallreviews'
-        };
-        $.ajax(requestConfig).then(function (responseMessage) {
-            console.log(responseMessage);
-            for (i in responseMessage) {
-                let title = responseMessage[i].title;
-                let id = responseMessage[i]._id;
-                reviewList.append(`<li><a href='/review/${id}'> ${title} </a> </li>`);
-            }
         });
     });
 
