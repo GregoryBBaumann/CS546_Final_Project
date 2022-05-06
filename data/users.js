@@ -58,7 +58,8 @@ async function signUp(firstName, lastName, email, password, gender, city, state,
         friendReqSent: new Set([]),
         userReviews: [],
         userThreads: [],
-        userVotes: []
+        userLikes: [],
+        blockedUsers: new Set([])
     }
     const res = await userCollection.insertOne(newUser);
     if(!res.acknowledged || !res.insertedId) throw `Could not insert User`;
@@ -98,6 +99,8 @@ async function postReview(data){
     const user = await userCollection.findOne({_id: ObjectId(data.userID)});
     let name = `${user.firstName} ${user.lastName}`;
     data.name = name;
+    data.likes = new Set([]);
+    data.comments = [];
     const reviewCollection = await reviews();
     let res = await reviewCollection.insertOne(data);
     if(!res.acknowledged || !res.insertedId) throw `Could not insert review`;
