@@ -56,11 +56,11 @@ async function signUp(firstName, lastName, email, password, gender, city, state,
         friends: new Set([]),
         friendReq: new Set([]),
         friendReqSent: new Set([]),
-        // userReviews: [],
         userReviews: new Set([]),
-        userThreads: [],
-        userLikes: [],
-        blockedUsers: new Set([])
+        userThreads: new Set([]),
+        userLikes: new Set([]),
+        blockedUsers: new Set([]),
+        savedReviews: new Set([])
     }
     const res = await userCollection.insertOne(newUser);
     if(!res.acknowledged || !res.insertedId) throw `Could not insert User`;
@@ -107,7 +107,6 @@ async function postReview(data){
     if(!res.acknowledged || !res.insertedId) throw `Could not insert review`;
     data = await reviewCollection.findOne({_id: res.insertedId});
     
-    // res = await userCollection.updateOne({_id: ObjectId(data.userID)}, {$push: {userReviews: data}});
     user.userReviews[data._id] = user._id;
     res = await userCollection.updateOne({_id: ObjectId(data.userID)}, {$set: user});
     if(!res.acknowledged || !res.modifiedCount) throw `Could not insert review`;
@@ -177,6 +176,7 @@ async function updateFriends(data){
     if(!("userReviews" in data)) data["userReviews"] = {};
     if(!("userThreads" in data)) data["userThreads"] = {};
     if(!("userLikes" in data)) data["userLikes"] = {};
+    if(!("savedReviews" in data)) data["savedReviews"] = {};
     const userCollection = await users();
     let id = data._id;
     delete data._id;

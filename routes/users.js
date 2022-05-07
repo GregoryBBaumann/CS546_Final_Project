@@ -424,38 +424,9 @@ router.get('/getinfo', async(req, res) =>{
     }
 })
 
-router.post('/review/like', async(req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        try {
-            let userId = ObjectId(req.session.user).toString();
-            let newLike = await users.createReviewLike(ObjectId(req.body.reviewId).toString(), userId);
-            if (newLike) {
-                res.json({ status: 'ok' });
-            } 
-        } catch (e) {
-            return res.status(400).json({error: e});
-        }
-    }
-});
-
-router.post('/review/dislike', async(req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        try {
-            let userId = ObjectId(req.session.user).toString();
-            let newDislike = await users.removeReviewLike(ObjectId(req.body.reviewId).toString(), userId);
-            if (newDislike) {
-                res.json({ status: 'removed' });
-            }
-        } catch (e) {
-            return res.status(400).json({error: e});
-        }
-    }
-});
+router.get('/savedreviews', async(req, res) =>{
+    if(!req.session.user) return res.redirect('/');
+    else return res.status(200).render('render/savedReviews', {});
+})
 
 module.exports = router;

@@ -20,11 +20,14 @@
         postedDate = `<h3>Posted On: ${postedDate}</h3>`;
         name = `<h3>Posted By: <a href = '/userinfo/${userID}'>${name}</a></h3>`;
         let likeLabel = 'Like';
-        if(currUser in likes) likeLabel = 'Unlike'
+        if(currUser._id in likes) likeLabel = 'Unlike'
         likes = `<h3 class='likes'>Likes: ${Object.keys(likes).length}</h3>`;
         like = `<button class='btn like' value='${_id}'>${likeLabel}</button>`;
         cmt = `<button class='btn comment' value='${_id}'>Comment</button>`;
-        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}<div>`;
+        let saveLabel = 'Save';
+        if(_id in currUser.savedReviews) saveLabel = 'Unsave'
+        save = `<button class='btn save' value='${_id}'>${saveLabel}</button>`;
+        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}${save}<div>`;
     }
 
 
@@ -36,7 +39,7 @@
         await $.ajax(info).then(function(res){
             const {data, currUser} = res;
             if(!(data._id in currUser.blockedUsers) && !(currUser._id in data.blockedUsers)){
-                feed.prepend(makeReview(a, currUser._id));
+                feed.prepend(makeReview(a, currUser));
             };
         })
     }
@@ -100,6 +103,33 @@
     $(document).on('click', 'button.comment', function(){
         let id = this.value;
         location.href = `/review/${id}`;
+    })
+
+    $(document).on('click', 'button.save', function(){
+        let id = this.value;
+        var currUserReq = {
+            methood: 'GET',
+            url: '/getinfo'
+        };
+        var btn = this;
+        $.ajax(currUserReq).then(function(res){
+            let {savedReviews} = res;
+            // if the review is already saved
+            if(id in savedReviews){
+                delete savedReviews[id];
+                btn.innerHTML = 'Save';
+            }
+            else{
+                savedReviews[id] = res._id;
+                btn.innerHTML = 'Unsave';
+            }
+            var updateUser = {
+                method: 'POST',
+                url: '/updatefriends',
+                data: res
+            };
+            $.ajax(updateUser).then(function(){})
+        })
     })
 
     newPostForm.submit(function (event){
