@@ -1,72 +1,8 @@
-<div class="row">
-    <h1 class="main-text">{{title}}</h1>
-    <main>
-        <dl>
-            <dt>Title</dt>
-            <dd>{{post.title}}</dd>
-            <dt>Posted Date</dt>
-            <dd>{{post.postedDate}}</dd>               
-            <dt>Category</dt>
-            <dd>{{post.category}}</dd>
-            <dt>Rating</dt>
-            <dd>{{post.rating}}</dd>
-            <dt>Review</dt>
-            <dd>{{post.review}}</dd>
-        </dl>
+<div id="reviewPage">
+    <h1 id="reviewid">{{reviewId}}</h1>
 
-        <div id='preComments'>
-            <h2>Previous comments:</h2>
-            <ul id="commentsList">
-                {{#each post.comments}}
-                <li>
-                    {{#with this}}
-                    {{comments}}  By: <a href='/myprofile'>name</a>
-                    {{/with}}
-                </li>
-                {{/each}}
-            </ul>
-        </div>
-
-
-        <div class="revForm">
-            <div class="form">number of like: {{post.likes.length}}</div>
-            <form id="like">
-                <div class="form">
-                    <input id="likeId" value="{{reviewId}}" hidden></input>
-                    <button type="submit" class="btn-">Like</button>
-                </div>
-            </form>
-            <form id="dislike">
-                <div class="form">
-                    <input id="dislikeId" value="{{reviewId}}" hidden></input>
-                    <button type="submit" class="btn-">Dislike</button>
-                </div>
-            </form>
-            <form id="comment">
-                <div class="form">
-                    <input id="commentId" value="{{reviewId}}" hidden></input>
-                </div>
-                <div class="form">
-                    <label id="formLabel" for="commentInput">Comment</label>
-                    <textarea class="form-control" id="commentInput" rows="3"></textarea>
-                </div>
-                <div class="form">
-                    <button type="submit" class="btn-">Submit</button>
-                </div>
-            </form>
-        </div>
-
-        {{#if error}}
-        <div id="newReviewError" class="error" >
-        <label for="errorLabel" id="errorLabel">{{error}}</label>
-        </div>
-        {{/if}}
-        <div id="errorMsg" class="error"></div>
-        <a href="/feed">Go back</a>
-    </main>
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
     crossorigin="anonymous"></script>
-    <script src="/public/js/reviewComments.js"></script>
-    <script src="/public/js/like.js"></script>
+    <script src="/public/js/review.js"></script>
 </div>
