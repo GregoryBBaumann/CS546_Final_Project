@@ -43,57 +43,32 @@
         var btn = this;
         $.ajax(reviewReq).then(function(res){
             let {data, currUser} = res;
-            var posterReq = {
-                method: 'POST',
-                url: `/userinfo/${data.userID}`
+            // if the user has already liked the post
+            if(currUser._id in data.likes){
+                currLikes -= 1;
+                delete data.likes[currUser._id];
+                delete currUser.userLikes[data._id];
+                btn.innerHTML = "Like";
             }
-            $.ajax(posterReq).then(function(res1){
-                // if the user has already liked the post
-                let posterInfo = res1.data;
-                //find the corressponding review
-                let target;
-                for(let i of posterInfo.userReviews){
-                    if(i._id === data._id){
-                        target = i;
-                        break;
-                    }
-                }
-                if(target.likes === undefined) target.likes = {};
-
-                if(currUser._id in data.likes){
-                    currLikes -= 1;
-                    delete data.likes[currUser._id];
-                    delete target.likes[currUser._id];
-                    delete currUser.userLikes[data._id];
-                    btn.innerHTML = "Like";
-                }
-                else{
-                    currLikes += 1;
-                    data.likes[currUser._id] = `${currUser.firstName} ${currUser.lastName}`;
-                    target.likes[currUser._id] = `${currUser.firstName} ${currUser.lastName}`;
-                    currUser.userLikes[data._id] = `${data.title}`;
-                    btn.innerHTML = "Unlike";
-                }
-                likes.innerHTML = `Likes: ${currLikes}`;
-                var updateReview = {
-                    method: 'POST',
-                    url: '/updatereview',
-                    data: data
-                }
-                var updateUser = {
-                    method: 'POST',
-                    url: '/updatefriends',
-                    data: currUser
-                };
-                var updatePoster = {
-                    method: 'POST',
-                    url: '/updatefriends',
-                    data: posterInfo
-                };
-                $.ajax(updateReview).then(function(){})
-                $.ajax(updateUser).then(function(){})
-                $.ajax(updatePoster).then(function(){})
-            })
+            else{
+                currLikes += 1;
+                data.likes[currUser._id] = `${currUser.firstName} ${currUser.lastName}`;
+                currUser.userLikes[data._id] = `${data.title}`;
+                btn.innerHTML = "Unlike";
+            }
+            likes.innerHTML = `Likes: ${currLikes}`;
+            var updateReview = {
+                method: 'POST',
+                url: '/updatereview',
+                data: data
+            }
+            var updateUser = {
+                method: 'POST',
+                url: '/updatefriends',
+                data: currUser
+            };
+            $.ajax(updateReview).then(function(){})
+            $.ajax(updateUser).then(function(){})
         })
     })
 
@@ -238,6 +213,8 @@
         // block user
         blockClick.on('click', function(event){
             event.preventDefault();
+            userLikedClick.hide();
+            likedByUser.hide();
             let flag = 0;
             if(!(data._id in currUser.blockedUsers)){
                 flag = 1;
@@ -295,9 +272,17 @@
         })
 
         let posts = res.data.userReviews;
-        $.each(posts, function(){
-            let rev = makeReview(this, currUser._id);
-            userPosts.prepend(rev);
+        let postKeys = Object.keys(posts);
+        $.each(postKeys, function(){
+            var getRev = {
+                method: 'GET',
+                url: `/getreview/${this}`
+            };
+            $.ajax(getRev).then(function(resReview){
+                let {data, currUser} = resReview;
+                let rev = makeReview(data, currUser._id);
+                userPosts.prepend(rev);
+            })
         })
 
         let likes = res.data.userLikes;

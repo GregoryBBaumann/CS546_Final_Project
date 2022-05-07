@@ -35,7 +35,7 @@ function isPresent(str, name){
 }
 
 function checkAge(age){
-    if(age < 0 || age > 120) throw `Invalid Age`;
+    if(age < 13 || age > 120) throw `Invalid Age`;
 }
 
 function checkRating(rating){

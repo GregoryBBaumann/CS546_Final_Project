@@ -56,7 +56,8 @@ async function signUp(firstName, lastName, email, password, gender, city, state,
         friends: new Set([]),
         friendReq: new Set([]),
         friendReqSent: new Set([]),
-        userReviews: [],
+        // userReviews: [],
+        userReviews: new Set([]),
         userThreads: [],
         userLikes: [],
         blockedUsers: new Set([])
@@ -106,7 +107,9 @@ async function postReview(data){
     if(!res.acknowledged || !res.insertedId) throw `Could not insert review`;
     data = await reviewCollection.findOne({_id: res.insertedId});
     
-    res = await userCollection.updateOne({_id: ObjectId(data.userID)}, {$push: {userReviews: data}})
+    // res = await userCollection.updateOne({_id: ObjectId(data.userID)}, {$push: {userReviews: data}});
+    user.userReviews[data._id] = user._id;
+    res = await userCollection.updateOne({_id: ObjectId(data.userID)}, {$set: user});
     if(!res.acknowledged || !res.modifiedCount) throw `Could not insert review`;
     return data;
 }
