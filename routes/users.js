@@ -130,7 +130,34 @@ router.get('/getallreviews', async(req, res) =>{
     }
     else{
         const data = await users.getAllReviews()
-        return res.status(200).json(data);
+        return res.status(200).json({data: data, userID: req.session.user});
+    }
+})
+
+router.get('/getreview/:id', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            let reviewPost = await users.getReviews(req.params.id);
+            const currUserData = await users.getUser(req.session.user);
+            return res.status(200).json({data: reviewPost, currUser: currUserData});
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
+router.post('/updatereview', async(req, res) =>{
+    if(!req.session.user){
+        return res.status(400).json("Invalid Request");
+    }
+    else{
+        if(!('likes' in req.body)) req.body['likes'] = {};
+        if(!('comments' in req.body)) req.body['comments'] = [];
+        let result = await users.updateReview(req.body);
+        return res.status(200).json("Success");
     }
 })
 
@@ -141,11 +168,13 @@ router.get('/review/:idNumber', async(req, res) => {
     else{
         try{
             let reviewPost = await users.getReviews(req.params.idNumber);
-            const title = reviewPost.name;
-            reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
-            res.render('render/review', { title: title, post: reviewPost, reviewId: req.params.idNumber});
+            // prevent blocked users from seeing the post
+            const data = await users.getUser(reviewPost.userID);
+            if(req.session.user in data.blockedUsers) return res.status(400).render('render/reviewNotFound');
+            // reviewPost.postedDate = new Date(reviewPost.postedDate).toLocaleString('English', { hour12: false });
+            res.render('render/review', {reviewId: req.params.idNumber});
         } catch (e){
-            return res.status(400).json({error: e});
+            return res.status(400).render('render/reviewNotFound');
         }
     }
 });
@@ -177,6 +206,7 @@ router.get('/userinfo/*', async(req, res) =>{
         const id = req.params['0'];
         const data = await users.getUser(id);
         const currUserData = await users.getUser(req.session.user);
+        if(req.session.user in data.blockedUsers) return res.status(400).render('render/userNotFound');
         const userInfo = {
             data: data,
             currUser: currUserData
@@ -197,6 +227,7 @@ router.post('/userinfo/*', async(req, res) =>{
         const id = req.params['0'];
         const data = await users.getUser(id);
         const currUserData = await users.getUser(req.session.user);
+        if(req.session.user in data.blockedUsers) return res.status(400).json({error: `User not found`});
         const userInfo = {
             data: data,
             currUser: currUserData
