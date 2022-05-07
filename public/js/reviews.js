@@ -6,6 +6,9 @@
     var review = $('#review');
     var date = new Date().toISOString().split("T")[0].replaceAll("-", "/");
     var feed = $('#feed');
+    var error = $('#error');
+    var errorLabel = $('#errorlabel');
+    error.hide();
 
 
     function makeReview(data, currUser){
@@ -115,12 +118,8 @@
                     url: '/updatefriends',
                     data: posterInfo
                 };
-                console.log(currUser.userLikes);
-                console.log(posterInfo.userLikes);
                 $.ajax(updateReview).then(function(){})
-                $.ajax(updateUser).then(function(resss){
-                    console.log(resss);
-                })
+                $.ajax(updateUser).then(function(){})
                 $.ajax(updatePoster).then(function(){})
             })
         })
@@ -133,29 +132,57 @@
 
     newPostForm.submit(function (event){
         event.preventDefault();
-        let titleVal = title.val();
-        let catVal = cat.val();
-        let ratingVal = rating.val();
-        let reviewVal = review.val();
-        let newReview = {
-            title : titleVal,
-            category : catVal,
-            review : reviewVal,
-            postedDate : date,
-            rating : ratingVal,
-            likes : new Set([]),
-            comments: []
+        error.hide();
+        let titleVal = title.val().trim();
+        let catVal = cat.val().trim();
+        let ratingVal = rating.val().trim();
+        let reviewVal = review.val().trim();
+        if(titleVal.length === 0){
+            error.show();
+            errorLabel.text("Error: Title is empty");
         }
-        var postReview = {
-            method: 'POST',
-            url: '/postreview',
-            data: newReview
+        else if(catVal.length === 0){
+            error.show();
+            errorLabel.text("Error: Category is empty");
         }
-        $.ajax(postReview).then(function(res){
-            newPostForm[0].reset();
-            feed.empty();
-            populate();
-        });
+        else if(ratingVal.length === 0){
+            error.show();
+            errorLabel.text("Error: Rating is empty");
+        }
+        else if(reviewVal.length === 0){
+            error.show();
+            errorLabel.text("Error: Review is empty");
+        }
+        else if(parseFloat(ratingVal) < 0){
+            error.show();
+            errorLabel.text("Error: Rating is less than 0");
+        }
+        else if(parseFloat(ratingVal) > 5){
+            error.show();
+            errorLabel.text("Error: Rating is greater than 5");
+        }
+        else{
+            error.hide();
+            let newReview = {
+                title : titleVal,
+                category : catVal,
+                review : reviewVal,
+                postedDate : date,
+                rating : ratingVal,
+                likes : new Set([]),
+                comments: []
+            }
+            var postReview = {
+                method: 'POST',
+                url: '/postreview',
+                data: newReview
+            }
+            $.ajax(postReview).then(function(res){
+                newPostForm[0].reset();
+                feed.empty();
+                populate();
+            })
+        }
     });
 
 })(window.jQuery);
