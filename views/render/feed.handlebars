@@ -14,22 +14,23 @@
             </div>
             <div id="ratingDiv">
                 <label for="rating">Rating</label>
-                <input type="text" id="rating" name="rating">
+                <input type="number" id="rating" name="rating">
             </div>
             <div>
                 <label for="review">Review</label>
                 <textarea name="review" id="review" cols="50" rows="10"></textarea>
             </div>
-            <button id="btn">Post</button>
+            <button class="btn", id="submit">Post</button>
         </form>
+    </div>
+
+    <div id="error">
+        <label id="errorlabel"></label>
     </div>
 
     <div id="feed">
 
     </div>
-
-    {{!-- <ul id="reviewList"></ul> --}}
-
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
     crossorigin="anonymous"></script>
