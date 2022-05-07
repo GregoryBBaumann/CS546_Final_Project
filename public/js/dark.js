@@ -7,13 +7,11 @@ chk.addEventListener('change', () => {
     start = true;
     if(localStorage["bool"] == "true") {
         document.body.classList.toggle('dark');
-        document.h1.classList.toggle('dark');
         localStorage["bool"]  = null;
         localStorage["theme"] = null;
     } else {
         localStorage["theme"] = "isdark";
         document.body.classList.toggle('dark');
-        document.h1.classList.toggle('dark');
         localStorage["bool"] = "true"
 
     }
@@ -22,7 +20,6 @@ chk.addEventListener('change', () => {
 $(function(){
     if(localStorage["theme"] == "isdark") {
         document.body.classList.toggle('dark');
-        document.h1.classList.toggle('dark');
         chk.checked = true;
     } else {
         chk.checked = false;
