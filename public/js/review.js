@@ -52,57 +52,32 @@
         var btn = this;
         $.ajax(reviewReq).then(function(res){
             let {data, currUser} = res;
-            var posterReq = {
-                method: 'POST',
-                url: `/userinfo/${data.userID}`
+            // if the user has already liked the post
+            if(currUser._id in data.likes){
+                currLikes -= 1;
+                delete data.likes[currUser._id];
+                delete currUser.userLikes[data._id];
+                btn.innerHTML = "Like";
             }
-            $.ajax(posterReq).then(function(res1){
-                // if the user has already liked the post
-                let posterInfo = res1.data;
-                //find the corressponding review
-                let target;
-                for(let i of posterInfo.userReviews){
-                    if(i._id === data._id){
-                        target = i;
-                        break;
-                    }
-                }
-                if(target.likes === undefined) target.likes = {};
-
-                if(currUser._id in data.likes){
-                    currLikes -= 1;
-                    delete data.likes[currUser._id];
-                    delete target.likes[currUser._id];
-                    delete currUser.userLikes[data._id];
-                    btn.innerHTML = "Like";
-                }
-                else{
-                    currLikes += 1;
-                    data.likes[currUser._id] = `${currUser.firstName} ${currUser.lastName}`;
-                    target.likes[currUser._id] = `${currUser.firstName} ${currUser.lastName}`;
-                    currUser.userLikes[data._id] = `${data.title}`;
-                    btn.innerHTML = "Unlike";
-                }
-                likes.innerHTML = `Likes: ${currLikes}`;
-                var updateReview = {
-                    method: 'POST',
-                    url: '/updatereview',
-                    data: data
-                }
-                var updateUser = {
-                    method: 'POST',
-                    url: '/updatefriends',
-                    data: currUser
-                };
-                var updatePoster = {
-                    method: 'POST',
-                    url: '/updatefriends',
-                    data: posterInfo
-                };
-                $.ajax(updateReview).then(function(){})
-                $.ajax(updateUser).then(function(){})
-                $.ajax(updatePoster).then(function(){})
-            })
+            else{
+                currLikes += 1;
+                data.likes[currUser._id] = `${currUser.firstName} ${currUser.lastName}`;
+                currUser.userLikes[data._id] = `${data.title}`;
+                btn.innerHTML = "Unlike";
+            }
+            likes.innerHTML = `Likes: ${currLikes}`;
+            var updateReview = {
+                method: 'POST',
+                url: '/updatereview',
+                data: data
+            }
+            var updateUser = {
+                method: 'POST',
+                url: '/updatefriends',
+                data: currUser
+            };
+            $.ajax(updateReview).then(function(){})
+            $.ajax(updateUser).then(function(){})
         })
     })
 
@@ -117,42 +92,17 @@
             };
             $.ajax(reviewReq).then(function(res){
                 let {data, currUser} = res;
-                var posterReq = {
+                data.comments.push([newComment, `${currUser.firstName} ${currUser.lastName}`, `${currUser._id}`]);
+
+                var updateReview = {
                     method: 'POST',
-                    url: `/userinfo/${data.userID}`
-                }
-                $.ajax(posterReq).then(function(res1){
-                    let posterInfo = res1.data;
-                    //find the corressponding review
-                    let target;
-                    for(let i of posterInfo.userReviews){
-                        if(i._id === data._id){
-                            target = i;
-                            break;
-                        }
-                    }
-                    if(target.comments === undefined) target.comments = [];
-
-                    data.comments.push([newComment, `${currUser.firstName} ${currUser.lastName}`, `${currUser._id}`]);
-                    target.comments.push([newComment, `${currUser.firstName} ${currUser.lastName}`, `${currUser._id}`]);
-
-                    var updateReview = {
-                        method: 'POST',
-                        url: '/updatereview',
-                        data: data
-                    };
-                    $.ajax(updateReview).then(function(){
-                        let finalContent = `<div id='${currUser._id}'><h2>${newComment}<h2></div><div>Posted By: <a href='/userinfo/${currUser._id}'>${currUser.firstName} ${currUser.lastName}</a></div>`;
-                        $('#comments').prepend(finalContent);
-                        newcmt.val('');
-                    })
-
-                    var updatePoster = {
-                        method: 'POST',
-                        url: '/updatefriends',
-                        data: posterInfo
-                    };
-                    $.ajax(updatePoster).then(function(){})
+                    url: '/updatereview',
+                    data: data
+                };
+                $.ajax(updateReview).then(function(){
+                    let finalContent = `<div id='${currUser._id}'><h2>${newComment}<h2></div><div>Posted By: <a href='/userinfo/${currUser._id}'>${currUser.firstName} ${currUser.lastName}</a></div>`;
+                    $('#comments').prepend(finalContent);
+                    newcmt.val('');
                 })
             })
         }
