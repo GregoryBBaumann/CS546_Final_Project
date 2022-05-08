@@ -307,6 +307,42 @@ async function updateReview(data){
     return res;
 }
 
+async function sortReviewLikes(){
+    let reviews = await getAllReviews();
+    function sortByLike(a, b) {
+        return Object.keys(b.likes).length - Object.keys(a.likes).length;
+    }
+    reviews.sort(sortByLike);
+    let result = [];
+    for (let i = 0; i < reviews.length; i++) {
+        result.push(reviews[i]);
+    }
+    return result;
+}
+
+async function sortThreadLikes(){
+    let threads = await getAllThreads();
+    function sortByLike(a, b) {
+        return Object.keys(b.likes).length - Object.keys(a.likes).length;
+    }
+    threads.sort(sortByLike);
+    let result = [];
+    for (let i = 0; i < threads.length; i++) {
+        result.push(threads[i]);
+    }
+    return result;
+}
+
+async function popularPage(){
+    let popularThreads = await sortThreadLikes();
+    let popularReviews = await sortReviewLikes();
+    return {
+        popularThreads: popularThreads,
+        popularReviews: popularReviews
+    }
+
+}
+
 module.exports = {
     signUp,
     login,
@@ -324,5 +360,6 @@ module.exports = {
     getThreadId,
     checkID,
     postThreadComment,
-    updateReview
+    updateReview,
+    popularPage
 }

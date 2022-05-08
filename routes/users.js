@@ -429,4 +429,26 @@ router.get('/savedreviews', async(req, res) =>{
     else return res.status(200).render('render/savedReviews', {});
 })
 
+router.get('/popularData', async (req, res) => {
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        let data = await users.popularPage();
+        res.json({
+            data: data
+        });
+    }
+});
+
+router.get('/popular', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        res.render('render/popular', {});
+    }
+})
+
+
 module.exports = router;
