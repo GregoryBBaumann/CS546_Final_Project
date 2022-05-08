@@ -17,7 +17,9 @@
         let saveLabel = 'Save';
         if(_id in currUser.savedReviews) saveLabel = 'Unsave'
         save = `<button class='btn save' value='${_id}'>${saveLabel}</button>`;
-        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}${save}<div>`;
+        let del = "";
+        if(userID === currUser._id) del = `<button class='btn del' value='${_id}'>Delete</button>`
+        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}${save}${del}<div>`;
     }
 
     var currUserReq = {
@@ -101,6 +103,24 @@
                 data: res
             };
             $.ajax(updateUser).then(function(){
+                $(`#${id}`).remove();
+            })
+        })
+    })
+    $(document).on('click', 'button.del', function(){
+        let id = this.value;
+        var currUserReq = {
+            methood: 'GET',
+            url: '/getinfo'
+        };
+        $.ajax(currUserReq).then(function(res){
+            let data = {postID: id, user: res};
+            var delReq = {
+                method: 'POST',
+                url: '/deletepost',
+                data: data
+            }
+            $.ajax(delReq).then(function(res){
                 $(`#${id}`).remove();
             })
         })

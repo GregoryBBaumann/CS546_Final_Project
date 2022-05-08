@@ -307,6 +307,23 @@ async function updateReview(data){
     return res;
 }
 
+async function deletePost(postID){
+    const userCollection = await users();
+    const res = await userCollection.find({}).toArray();
+    // let's brute force it
+    for(let u of res){
+        if(postID in u.userReviews || postID in u.userLikes || postID in u.savedReviews){
+            if(postID in u.userReviews) delete u.userReviews[postID];
+            if(postID in u.userLikes) delete u.userLikes[postID];
+            if(postID in u.savedReviews) delete u.savedReviews[postID];
+            const result = await userCollection.updateOne({_id: ObjectId(u._id)}, {$set: u});
+        }
+    }
+
+    const reviewCollection = await reviews();
+    const resultRev = await reviewCollection.deleteOne({_id: ObjectId(postID)});
+}
+
 module.exports = {
     signUp,
     login,
@@ -324,5 +341,6 @@ module.exports = {
     getThreadId,
     checkID,
     postThreadComment,
-    updateReview
+    updateReview,
+    deletePost
 }

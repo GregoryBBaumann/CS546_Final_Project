@@ -429,4 +429,14 @@ router.get('/savedreviews', async(req, res) =>{
     else return res.status(200).render('render/savedReviews', {});
 })
 
+router.post('/deletepost', async(req, res) =>{
+    if(!req.session.user) return res.status(400);
+    else{
+        let {postID, user} = req.body;
+        if(user._id != req.session.user) return res.status(400);
+        const result = await users.deletePost(postID);
+        return res.status(200).json({msg: "Success"});
+    }
+})
+
 module.exports = router;

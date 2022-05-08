@@ -24,6 +24,8 @@
         let saveLabel = 'Save';
         if(_id in currUser.savedReviews) saveLabel = 'Unsave'
         save = `<button class='btn save' value='${_id}'>${saveLabel}</button>`;
+        let del = "";
+        if(userID === currUser._id) del = `<button class='btn del' value='${_id}'>Delete</button>`
         cmtIp = `<textarea name="commentinput" id="commentinput" cols="60" rows="2"></textarea>`
         cmt = `<button class='btn comment' value='${_id}'>Comment</button>`;
         cmtDiv = `<div id='comments'>`
@@ -35,7 +37,7 @@
             cmtDiv += finalContent;
         }
         cmtDiv += `</div>`;
-        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${save}<br>${cmtIp}${cmt}${cmtDiv}<div>`;
+        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${save}${del}<br>${cmtIp}${cmt}${cmtDiv}<div>`;
     }
 
     $.ajax(reviewReq).then(function(res){
@@ -135,6 +137,25 @@
                 data: res
             };
             $.ajax(updateUser).then(function(){})
+        })
+    })
+
+    $(document).on('click', 'button.del', function(){
+        let id = this.value;
+        var currUserReq = {
+            methood: 'GET',
+            url: '/getinfo'
+        };
+        $.ajax(currUserReq).then(function(res){
+            let data = {postID: id, user: res};
+            var delReq = {
+                method: 'POST',
+                url: '/deletepost',
+                data: data
+            }
+            $.ajax(delReq).then(function(res){
+                $(`#${id}`).remove();
+            })
         })
     })
 })(window.jQuery);
