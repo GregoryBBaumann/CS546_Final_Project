@@ -348,7 +348,6 @@ async function updateReview(data){
 async function deletePost(postID){
     const userCollection = await users();
     const res = await userCollection.find({}).toArray();
-    // let's brute force it
     for(let u of res){
         if(postID in u.userReviews || postID in u.userLikes || postID in u.savedReviews){
             if(postID in u.userReviews) delete u.userReviews[postID];
@@ -398,6 +397,67 @@ async function popularPage(){
 
 }
 
+async function blockUpdates(currUser, blockedUser){
+    const userCollection = await users();
+    const reviewsCollection = await reviews();
+
+    if(currUser.userReviews === undefined || currUser.userReviews === null) currUser.userReviews = {};
+    if(blockedUser.userReviews === undefined || blockedUser.userReviews === null) blockedUser.userReviews = {};
+    if(currUser.userLikes === undefined || currUser.userLikes === null) currUser.userLikes = {};
+    if(blockedUser.userLikes === undefined || blockedUser.userLikes === null) blockedUser.userLikes = {};
+    if(currUser.savedReviews === undefined || currUser.savedReviews === null) currUser.savedReviews = {};
+    if(blockedUser.savedReviews === undefined || blockedUser.savedReviews === null) blockedUser.savedReviews = {};
+
+    let currUserReviews = Object.keys(currUser.userReviews);
+    for(let i of currUserReviews){
+        let review = await reviewsCollection.findOne({_id: ObjectId(i)});
+        let reviewID = review._id;
+        delete review["_id"];
+        if(i in blockedUser.userLikes){
+            delete blockedUser.userLikes[i]
+            delete review.likes[blockedUser._id];
+        }
+        let newComments = [];
+        for(let j = 0; j < review.comments.length; j += 1){
+            if(review.comments[j][2] !== blockedUser._id) newComments.push(review.comments[j]);
+        }
+        review.comments = newComments;
+        await reviewsCollection.updateOne({_id: ObjectId(reviewID)}, {$set: review});
+        if(i in blockedUser.savedReviews){
+            delete blockedUser.savedReviews[i]
+        }
+    }
+
+    let blockedUserReviews = Object.keys(blockedUser.userReviews);
+    for(let i of blockedUserReviews){
+        let review = await reviewsCollection.findOne({_id: ObjectId(i)});
+        let reviewID = review._id;
+        delete review["_id"];
+        if(i in currUser.userLikes){
+            delete currUser.userLikes[i]
+            delete review.likes[currUser._id];
+        }
+        let newComments = [];
+        for(let j = 0; j < review.comments.length; j += 1){
+            if(review.comments[j][2] !== currUser._id) newComments.push(review.comments[j]);
+        }
+        review.comments = newComments;
+        await reviewsCollection.updateOne({_id: ObjectId(reviewID)}, {$set: review});
+        if(i in currUser.savedReviews){
+            delete currUser.savedReviews[i]
+        }
+    }
+
+    let currUserID = currUser._id;
+    let blockedUserID = blockedUser._id;
+
+    delete currUser["_id"];
+    delete blockedUser["_id"];
+
+    await userCollection.updateOne({_id: ObjectId(currUserID)}, {$set: currUser});
+    await userCollection.updateOne({_id: ObjectId(blockedUserID)}, {$set: blockedUser});
+}
+
 
 module.exports = {
     signUp,
@@ -419,5 +479,6 @@ module.exports = {
     updateReview,
     deletePost,
     postThreadLike,
-    popularPage
+    popularPage,
+    blockUpdates
 }

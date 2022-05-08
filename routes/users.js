@@ -467,6 +467,15 @@ router.post('/deletepost', async(req, res) =>{
     }
 })
 
+router.post('/blockUpdates', async(req, res) =>{
+    if(!req.session.user) return res.status(400);
+    else{
+        let {currUser, blockedUser} = req.body;
+        const result = await users.blockUpdates(currUser, blockedUser);
+        return res.status(200).json({msg: "Success"});
+    }
+})
+
 router.get('/popularData', async (req, res) => {
     if(!req.session.user){
         return res.redirect('/');

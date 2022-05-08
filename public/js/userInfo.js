@@ -269,6 +269,20 @@
             likedByUser.hide();
             let flag = 0;
             if(!(data._id in currUser.blockedUsers)){
+                // remove likes of the blockees
+                let blocks = {
+                    currUser: currUser,
+                    blockedUser: data
+                }
+                var updateBlock = {
+                    method: 'POST',
+                    url: '/blockUpdates',
+                    data: blocks
+                }
+                $.ajax(updateBlock).then(function(res){
+                    console.log(res);
+                })
+                
                 flag = 1;
                 if(data._id in currUser.friendReqSent){
                     delete currUser.friendReqSent[data._id];
