@@ -14,9 +14,8 @@
     var status = $('#status');
     var likedByUser = $('#likedbyuser');
 
-    function makeReview(data, currUser){
+    function makeReview(data, currUser, type){
         let{title, category, rating, review, postedDate, name, userID, likes, _id} = data;
-        if(likes === undefined) likes = {};
         title = `<h1><a href = '/review/${_id}'>${title}</a></h1>`;
         category = `<h2>Category: ${category}</h2>`;
         rating = `<h2>Rating: ${rating}</h2>`;
@@ -24,11 +23,17 @@
         postedDate = `<h3>Posted On: ${postedDate}</h3>`;
         name = `<h3>Posted By: <a href = '/userinfo/${userID}'>${name}</a></h3>`;
         let likeLabel = 'Like';
-        if(currUser in likes) likeLabel = 'Unlike'
+        if(currUser._id in likes) likeLabel = 'Unlike'
         likes = `<h3 class='likes'>Likes: ${Object.keys(likes).length}</h3>`;
         like = `<button class='btn like' value='${_id}'>${likeLabel}</button>`;
         cmt = `<button class='btn comment' value='${_id}'>Comment</button>`;
-        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}<div>`;
+        let saveLabel = 'Save';
+        if(_id in currUser.savedReviews) saveLabel = 'Unsave'
+        save = `<button class='btn save' value='${_id}'>${saveLabel}</button>`;
+        let del = "";
+        if(userID === currUser._id) del = `<button class='btn del' value='${_id}'>Delete</button>`
+        if(type === undefined || type === null) type = "";
+        return `<div id='${_id+type}' class='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}${save}${del}<div>`;
     }
 
     $(document).on('click', 'button.like', function(){
@@ -75,6 +80,53 @@
     $(document).on('click', 'button.comment', function(){
         let id = this.value;
         location.href = `/review/${id}`;
+    })
+
+    $(document).on('click', 'button.save', function(){
+        let id = this.value;
+        var currUserReq = {
+            methood: 'GET',
+            url: '/getinfo'
+        };
+        var btn = this;
+        $.ajax(currUserReq).then(function(res){
+            let {savedReviews} = res;
+            // if the review is already saved
+            if(id in savedReviews){
+                delete savedReviews[id];
+                btn.innerHTML = 'Save';
+            }
+            else{
+                savedReviews[id] = res._id;
+                btn.innerHTML = 'Unsave';
+            }
+            var updateUser = {
+                method: 'POST',
+                url: '/updatefriends',
+                data: res
+            };
+            $.ajax(updateUser).then(function(){})
+        })
+    })
+
+    $(document).on('click', 'button.del', function(){
+        let id = this.value;
+        var currUserReq = {
+            methood: 'GET',
+            url: '/getinfo'
+        };
+        $.ajax(currUserReq).then(function(res){
+            let data = {postID: id, user: res};
+            var delReq = {
+                method: 'POST',
+                url: '/deletepost',
+                data: data
+            }
+            $.ajax(delReq).then(function(res){
+                $(`#${id}`).remove();
+                $(`.${id}`).remove();
+            })
+        })
     })
 
     function onLoad(){
@@ -280,7 +332,7 @@
             };
             $.ajax(getRev).then(function(resReview){
                 let {data, currUser} = resReview;
-                let rev = makeReview(data, currUser._id);
+                let rev = makeReview(data, currUser);
                 userPosts.prepend(rev);
             })
         })
@@ -294,7 +346,7 @@
             };
             $.ajax(getRev).then(function(resReview){
                 let {data, currUser} = resReview;
-                let rev = makeReview(data, currUser._id);
+                let rev = makeReview(data, currUser, "like");
                 likedByUser.prepend(rev);
             })
         })
