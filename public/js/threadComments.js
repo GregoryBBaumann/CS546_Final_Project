@@ -20,6 +20,7 @@
                         <p>${res.comment}</p>
                     </li>`
                 );
+                $('#text').val("");
             })
         } else {
 
