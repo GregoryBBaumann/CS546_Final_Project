@@ -1,7 +1,10 @@
 <div>
-    <h3 id="threadTitle">{{title}}</h1>
+    <h2 id="threadTitle">Thread title: {{title}}</h2>
     <p id="threadText">{{text}}</p>
-    <p>Voting: {{voting}}</p>
+    <div>
+        <h3 id="votingLB">Like/Dislike Ratio:</h3>
+        <p id="voting">{{voting}}</p>
+    </div>
     <div class="like/dislike" id="like/dislike">
         <button id="likeButton">Like</button>
         <button id="dislikeButton">Dislike</button>
@@ -33,4 +36,7 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
     crossorigin="anonymous"></script>
     <script src="/public/js/threadComments.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+    crossorigin="anonymous"></script>
+    <script src="/public/js/vote.js"></script>
 </div>
