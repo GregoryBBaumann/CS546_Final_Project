@@ -229,21 +229,21 @@ router.get('/userinfo/*', async(req, res) =>{
 
 router.post('/userinfo/*', async(req, res) =>{
     if(!req.session.user){
-        return res.redirect('/');
+        return res.status(400);
     }
     else{
         try{
         const id = req.params['0'];
         const data = await users.getUser(id);
         const currUserData = await users.getUser(req.session.user);
-        if(req.session.user in data.blockedUsers) return res.status(400).json({error: `User not found`});
+        if(req.session.user in data.blockedUsers) return res.status(404).json({error: `User not found`});
         const userInfo = {
             data: data,
             currUser: currUserData
         };
         return res.status(200).json(userInfo);
         }catch(e){
-            return res.status(400).json({error: `User not found`});
+            return res.status(404).json({error: `User not found`});
         }
     }
 })
