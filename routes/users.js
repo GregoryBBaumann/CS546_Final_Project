@@ -409,6 +409,34 @@ router.post('/thread/:id/comment', async(req, res) =>{
     }
 })
 
+router.post('/thread/:id/like', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            let voting = await users.postThreadLike(req.params.id,req.session.user,1);
+            return res.status(200).json({voting:voting});
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
+router.post('/thread/:id/dislike', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            let voting = await users.postThreadLike(req.params.id,req.session.user,-1);
+            return res.status(200).json({voting:voting});
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
 router.get('/blockedusers', async(req, res) =>{
     if(!req.session.user) return res.redirect('/');
     else return res.status(200).render('render/blockedusers', {});
@@ -428,27 +456,5 @@ router.get('/savedreviews', async(req, res) =>{
     if(!req.session.user) return res.redirect('/');
     else return res.status(200).render('render/savedReviews', {});
 })
-
-router.get('/popularData', async (req, res) => {
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        let data = await users.popularPage();
-        res.json({
-            data: data
-        });
-    }
-});
-
-router.get('/popular', async(req, res) =>{
-    if(!req.session.user){
-        return res.redirect('/');
-    }
-    else{
-        res.render('render/popular', {});
-    }
-})
-
 
 module.exports = router;
