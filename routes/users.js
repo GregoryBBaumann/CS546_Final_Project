@@ -372,13 +372,11 @@ router.post('/threads', async(req, res) =>{
         return res.redirect('/');
     }
     else {
-
-        let data = req.body;
         userID = req.session.user;
         // error checking
         try{
-            let title = checkStr(data.title, "Title");
-            let text = checkStr(data.text, "Text");
+            let title = checkStr(xss(req.body.title), "Title");
+            let text = checkStr(xss(req.body.text), "Text");
             const d = new Date();
             let day = `${d.getDate()+1}`;
             if(day < 10) day = "0".concat(day);
@@ -415,9 +413,8 @@ router.post('/thread/:id/comment', async(req, res) =>{
     }
     else{
         try{
-            let data = req.body;
-            checkStr(data.text);
-            let comment = await users.postThreadComment(data.text,req.params.id,req.session.user);
+            checkStr(xss(req.body.text));
+            let comment = await users.postThreadComment(xss(req.body.text),req.params.id,req.session.user);
             return res.status(200).json({userName:comment.userName,comment:comment.comment});
         }catch (e){
             return res.status(400).json({error: e});
@@ -476,7 +473,8 @@ router.get('/savedreviews', async(req, res) =>{
 router.post('/deletepost', async(req, res) =>{
     if(!req.session.user) return res.status(400);
     else{
-        let {postID, user} = req.body;
+        let postID = xss(req.body.postID);
+        let user = xss(req.body.user);
         if(user._id != req.session.user) return res.status(400);
         const result = await users.deletePost(postID);
         return res.status(200).json({msg: "Success"});
@@ -486,7 +484,8 @@ router.post('/deletepost', async(req, res) =>{
 router.post('/blockUpdates', async(req, res) =>{
     if(!req.session.user) return res.status(400);
     else{
-        let {currUser, blockedUser} = req.body;
+        let currUser = xss(req.body.currUser);
+        let blockedUser = xss(req.body.blockedUser);
         const result = await users.blockUpdates(currUser, blockedUser);
         return res.status(200).json({msg: "Success"});
     }
