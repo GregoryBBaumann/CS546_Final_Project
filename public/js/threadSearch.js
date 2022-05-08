@@ -25,7 +25,7 @@ function checkStr(str, name){
                     if(res.error){
                         result.html(
                             `<p>
-                                No thread found matching search
+                                No thread found matching "${text}"
                             </p>`
                         );
                     }else{

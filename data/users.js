@@ -123,6 +123,16 @@ async function getAllReviews(){
     return data;
 }
 
+async function getReviewTitle(title){
+    title = checkStr(title);
+    const reviewCollection = await reviews();
+    const data = await reviewCollection.findOne({title: title});
+    if (data === null){
+        return -1;
+    }
+    return data;
+}
+
 async function updateUser(updateParams, id){
     const names = {
         firstName: "First Name",
@@ -490,5 +500,6 @@ module.exports = {
     postThreadLike,
     popularPage,
     blockUpdates,
-    getAllUsers
+    getAllUsers,
+    getReviewTitle
 }
