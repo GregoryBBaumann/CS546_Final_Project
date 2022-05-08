@@ -23,6 +23,11 @@ async function getUser(id){
     return userData;
 }
 
+async function getAllUsers(){
+    const userCollection = await users();
+    const data = await userCollection.find({}).toArray();
+    return data;
+}
 
 async function signUp(firstName, lastName, email, password, gender, city, state, age){
     // Check inputs
@@ -484,5 +489,6 @@ module.exports = {
     deletePost,
     postThreadLike,
     popularPage,
-    blockUpdates
+    blockUpdates,
+    getAllUsers
 }
