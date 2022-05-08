@@ -265,11 +265,12 @@
         // block user
         blockClick.on('click', function(event){
             event.preventDefault();
+            onLoad();
             userLikedClick.hide();
             likedByUser.hide();
             let flag = 0;
             if(!(data._id in currUser.blockedUsers)){
-                // remove likes of the blockees
+                // remove likes and content of the blockees
                 let blocks = {
                     currUser: currUser,
                     blockedUser: data
@@ -280,9 +281,8 @@
                     data: blocks
                 }
                 $.ajax(updateBlock).then(function(res){
-                    console.log(res);
                 })
-                
+
                 flag = 1;
                 if(data._id in currUser.friendReqSent){
                     delete currUser.friendReqSent[data._id];
