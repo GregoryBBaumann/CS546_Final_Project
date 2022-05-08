@@ -112,3 +112,8 @@ body.dark a{
   color: red;
   margin: 20px;
 }
+
+body.dark .errorLabel {
+  color: red;
+  margin: 20px;
+}
