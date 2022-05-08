@@ -1,3 +1,11 @@
+function checkStr(str, name){
+    if(str === null || str === undefined) throw `${name} not provided`;
+    if(typeof str !== 'string') throw `${name} is not a string`;
+    str = str.trim();
+    if(str.length === 0) throw `${name} is empty`;
+    return str;
+}
+
 (function ($){
     var newPostForm = $('#newPostForm');
     var title = $('#title');
@@ -9,7 +17,8 @@
     var error = $('#error');
     var errorLabel = $('#errorlabel');
     error.hide();
-
+    var searchForum = $('#searchThread'),
+        searchresult = $('#searchResult');
 
     function makeReview(data, currUser){
         let{title, category, rating, review, postedDate, name, userID, likes, _id} = data;
@@ -207,5 +216,43 @@
             })
         }
     });
+
+    searchForum.submit(function (event) {
+        event.preventDefault();
+        try {
+            var text = $('#searchText').val();
+            checkStr(text,"Search text")
+            var searchThread = {
+                method: 'POST',
+                url: `/review/search`,
+                data: {text: text}
+            }
+            $.ajax(searchThread).then(function (res) {
+                searchresult.show();
+                if(res.error){
+                    searchresult.html(
+                        `<p>
+                            No review found matching "${text}"
+                        </p>`
+                    );
+                }else{
+                    searchresult.html(
+                        `<div>
+                            <a href="/review/${res.threadId}">${res.threadTitle}</a>
+                        </div>`
+                    );
+                }
+                $('#searchText').val("");
+            })
+        } catch (error) {
+            searchresult.show();
+            searchresult.html(
+                `<p>
+                    ${error}
+                </p>`
+            );
+            $('#searchText').val("");
+        }
+})
 
 })(window.jQuery);

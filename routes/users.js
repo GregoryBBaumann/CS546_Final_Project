@@ -188,6 +188,24 @@ router.get('/review/:idNumber', async(req, res) => {
     }
 });
 
+router.post('/review/search', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            checkStr(xss(req.body.text));
+            let thread = await users.getReviewTitle(xss(req.body.text));
+            if(thread == -1){
+                return res.status(200).json({error:"Review Not Found"});
+            }
+            return res.status(200).json({threadId:thread._id.toString(),threadTitle:thread.title});
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
 router.post('/review/newComment', async(req, res) => {
     if(!req.session.user){
         return res.redirect('/');
