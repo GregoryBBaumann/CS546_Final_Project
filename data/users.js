@@ -364,6 +364,8 @@ async function deletePost(postID){
 async function sortReviewLikes(){
     let reviews = await getAllReviews();
     function sortByLike(a, b) {
+        if(b.likes === null) throw "Do not have likes";
+        if(a.likes === null) throw "Do not have likes";
         return Object.keys(b.likes).length - Object.keys(a.likes).length;
     }
     reviews.sort(sortByLike);
@@ -377,6 +379,8 @@ async function sortReviewLikes(){
 async function sortThreadLikes(){
     let threads = await getAllThreads();
     function sortByLike(a, b) {
+        if(b.voting === null) throw "Do not have likes";
+        if(a.voting === null) throw "Do not have likes";
         return b.voting - a.voting;
     }
     threads.sort(sortByLike);
