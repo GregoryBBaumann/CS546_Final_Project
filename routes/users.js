@@ -467,4 +467,26 @@ router.post('/deletepost', async(req, res) =>{
     }
 })
 
+router.get('/popularData', async (req, res) => {
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        let data = await users.popularPage();
+        res.json({
+            data: data
+        });
+    }
+});
+
+router.get('/popular', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        res.render('render/popular', {});
+    }
+})
+
+
 module.exports = router;
