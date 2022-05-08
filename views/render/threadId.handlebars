@@ -1,35 +1,28 @@
 <div>
-    <h2 id="threadTitle">{{title}}</h2>
-    <p id="threadText">{{text}}</p>
+    <h1 id="threadTitle"></h1>
+    <h2 id="threadText"></h2>
+    <h3 id="postedOn"></h3>
     <div>
-        <p id="voting">{{voting}}</p>
+        <h2 id="voting"></h2>
     </div>
     <div class="like/dislike" id="like/dislike">
         <button class="btn" id="likeButton">Like</button>
         <button class="btn" id="dislikeButton">Dislike</button>
     </div>
-    <h4>Comments:</h2>
-    <ul class="commentsList" id="commentsLists">
-        {{#if comments}}
-            {{#each comments}}
-                <li>
-                    <h6>{{this.userName}}</h6>
-                    <p>{{this.comment}}</p>
-                </li>
-            {{/each}}
-        {{/if}}
-    </ul>
+    
+    <br>
+
     <div class="commentInput" id="commentInput">
         <form class="postComment" id="postComment">
-            <div>
-                <label for="text">Comment Text:</label>
-            </div>
-            <div>
-                <textarea name="text" id="text" cols="50" rows="7"></textarea>
-            </div>
+            <textarea name="text" id="text" cols="50" rows="2"></textarea>
             <button class="btn" id="commmentButton" type="submit">Post Comment</button>
         </form>
     </div>
+
+    <div id="commentsDiv">
+
+    </div>
+
     <a href="/threads">Return</a>
     <p class="threadId" id="threadId" hidden>{{_id}}</p>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="

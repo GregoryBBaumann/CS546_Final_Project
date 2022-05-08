@@ -407,6 +407,21 @@ router.get('/thread/:id', async(req, res) =>{
     }
 })
 
+router.get('/getThread/:id', async(req, res) =>{
+    if(!req.session.user){
+        return res.status(400);
+    }
+    else{
+        try{
+            users.checkID(req.params.id);
+            let thread = await users.getThreadId(req.params.id);
+            return res.status(200).json(thread);
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
 router.post('/thread/:id/comment', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
