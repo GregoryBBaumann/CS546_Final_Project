@@ -1,26 +1,14 @@
 <div>
-    <h2 id="threadTitle">Thread title: {{title}}</h2>
+    <h2 id="threadTitle">{{title}}</h2>
     <p id="threadText">{{text}}</p>
     <div>
-        <h3 id="votingLB">Like/Dislike Ratio:</h3>
         <p id="voting">{{voting}}</p>
     </div>
     <div class="like/dislike" id="like/dislike">
-        <button id="likeButton">Like</button>
-        <button id="dislikeButton">Dislike</button>
+        <button class="btn" id="likeButton">Like</button>
+        <button class="btn" id="dislikeButton">Dislike</button>
     </div>
     <h4>Comments:</h2>
-    <div class="commentInput" id="commentInput">
-        <form class="postComment" id="postComment">
-            <div>
-                <label for="text">Comment Text:</label>
-            </div>
-            <div>
-                <textarea name="text" id="text" cols="50" rows="7"></textarea>
-            </div>
-            <button class="commentButton" id="commmentButton" type="submit">Post Comment</button>
-        </form>
-    </div>
     <ul class="commentsList" id="commentsLists">
         {{#if comments}}
             {{#each comments}}
@@ -31,6 +19,17 @@
             {{/each}}
         {{/if}}
     </ul>
+    <div class="commentInput" id="commentInput">
+        <form class="postComment" id="postComment">
+            <div>
+                <label for="text">Comment Text:</label>
+            </div>
+            <div>
+                <textarea name="text" id="text" cols="50" rows="7"></textarea>
+            </div>
+            <button class="btn" id="commmentButton" type="submit">Post Comment</button>
+        </form>
+    </div>
     <a href="/threads">Return</a>
     <p class="threadId" id="threadId" hidden>{{_id}}</p>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
