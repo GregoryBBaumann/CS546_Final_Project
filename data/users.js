@@ -377,7 +377,7 @@ async function sortReviewLikes(){
 async function sortThreadLikes(){
     let threads = await getAllThreads();
     function sortByLike(a, b) {
-        return Object.keys(b.likes).length - Object.keys(a.likes).length;
+        return b.voting - a.voting;
     }
     threads.sort(sortByLike);
     let result = [];

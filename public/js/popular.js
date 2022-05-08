@@ -18,18 +18,20 @@
     });
 
     function setReviewList(data) {
+        let id = data._id;
         let title = data.title;
         let category = data.category;
         let rating = data.rating;
         let likes = Object.keys(data.likes).length;
-        let newItem = $(`<li> title: ${title} &emsp; category: ${category} &emsp; rating: ${rating} &emsp; likes: ${likes} &emsp;</li>`);
+        let newItem = $(`<li> title: ${title} &emsp; category: ${category} &emsp; rating: ${rating} &emsp; likes: ${likes} &emsp; <a href='/review/${id}'>Detail</a></li>`);
         return newItem;
     }
 
     function setThreadList(data) {
+        let id = data._id;
         let title = data.title;
-        let likes = Object.keys(data.likes).length;
-        let newItem = $(`<li> title: ${title} &emsp; likes: ${likes} &emsp;</li>`);
+        let likes = data.voting;
+        let newItem = $(`<li> title: ${title} &emsp; likes: ${likes} &emsp; <a href='/thread/${id}'>Detail</a></li>`);
         return newItem;
     }
 })(jQuery);
