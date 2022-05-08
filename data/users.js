@@ -196,6 +196,7 @@ async function postThread(title,postedDate,text,voting,userId){
         postedDate: postedDate,
         text: text,
         voting: voting,
+        likes: {},
         comments: []
     }
 
@@ -205,8 +206,10 @@ async function postThread(title,postedDate,text,voting,userId){
     if(!res.acknowledged || !res.insertedId) throw `Could not insert thread`;
     
     // Insert thread into user threads
+    let user = await getUser(userId);
+    user.userThreads[data._id] = ObjectId(userId);
     const userCollection = await users();
-    res = await userCollection.updateOne({_id: ObjectId(userId)}, {$push: {userThreads: data}})
+    res = await userCollection.updateOne({_id: ObjectId(userId)}, {$set: user})
     if(!res.acknowledged || !res.modifiedCount) throw `Could not update user`;
     return data;
 }
@@ -253,6 +256,42 @@ async function postThreadComment(comment, threadId, userId){
     res = await threadCollection.updateOne({_id: ObjectId(threadId)}, {$push: {comments: data}})
     if(!res.acknowledged || !res.modifiedCount) throw `Could not update thread`;
     return data;
+}
+
+async function postThreadLike(threadId,userId,likeVal){
+    checkID(threadId);
+    checkID(userId);
+    let threadData = await getThreadId(threadId);
+    let res;
+    let change = 0;
+    if(threadData.likes[userId] === undefined || threadData.likes[userId] == 0){
+        // Going from NULL/0 -> like/dislike
+        threadData.likes[userId] = likeVal;
+        change = likeVal;
+    } else if(threadData.likes[userId] != likeVal){
+        // The going from like/dislike -> dislike/like
+        if(likeVal == 1) {
+            change = 2;
+        }
+        if(likeVal == -1){
+            change = -2;
+        }
+        threadData.likes[userId] = likeVal;
+    } else {
+        // Going from like/dislike -> 0
+        if(likeVal == 1) {
+            change = -1;
+        }
+        if(likeVal == -1){
+            change = 1;
+        }
+        threadData.likes[userId] = 0;
+    }
+    threadData.voting = threadData.voting + change;
+    const threadCollection = await threads();
+    res = await threadCollection.updateOne({_id: ObjectId(threadId)}, {$set: threadData})
+    if(!res.acknowledged || !res.modifiedCount) throw `Could not update thread`;
+    return threadData.voting;
 }
 
 async function getAllReviewComments(id) {
@@ -324,5 +363,6 @@ module.exports = {
     getThreadId,
     checkID,
     postThreadComment,
-    updateReview
+    updateReview,
+    postThreadLike
 }
