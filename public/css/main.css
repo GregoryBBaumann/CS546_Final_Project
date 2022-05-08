@@ -104,13 +104,13 @@ body.dark div {
 	color: #fff;
 }
 
-body.dark a:visited {
+/* body.dark a:visited {
     color: lightpink;
 }
 
 body.dark a {
     color: lightblue;
-}
+} */
 
 button:hover {
 	color: rgba(255, 255, 255, 1);
