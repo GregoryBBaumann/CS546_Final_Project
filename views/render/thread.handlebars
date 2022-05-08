@@ -1,4 +1,13 @@
 <div>
+    <div class="searchBar">
+        <form class="searchThread" id="searchThread">  
+            <button type="submit" class="btn" id="searchButton">Search:</button>
+            <input type="text" id="searchText">
+        </form>
+    </div>
+    <div id="searchResult" hidden>
+
+    </div>
     <h1>Make Thread</h1>
     <div class="newThread">
         <form class = "newThread" id="newThreadForm" method="POST">
@@ -28,7 +37,6 @@
             {{/each}}
         {{/if}}
     </div>
-
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
     crossorigin="anonymous"></script>

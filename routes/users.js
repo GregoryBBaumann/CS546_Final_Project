@@ -437,6 +437,24 @@ router.post('/thread/:id/comment', async(req, res) =>{
     }
 })
 
+router.post('/thread/search', async(req, res) =>{
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    else{
+        try{
+            checkStr(xss(req.body.text));
+            let thread = await users.getThreadTitle(xss(req.body.text));
+            if(thread == -1){
+                return res.status(200).json({error:"Thread Not Found"});
+            }
+            return res.status(200).json({threadId:thread._id.toString(),threadTitle:thread.title});
+        }catch (e){
+            return res.status(400).json({error: e});
+        }
+    }
+})
+
 router.post('/thread/:id/like', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
