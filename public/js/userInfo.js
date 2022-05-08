@@ -5,8 +5,10 @@
     var userInfoID = $('#userID');
     var userBio = $('#userBio');
     var userPosts = $('#userPosts');
+    var userThreads = $('#userThreads');
     var userBioClick = $('#userBioClick');
     var userPostsClick = $('#userPostsClick');
+    var userThreadsClick = $('#userThreadsClick');
     var userLikedClick = $('#userLikedClick');
     var blockClick = $('#blockClick');
     var friendReqBtn = $('#friendReqBtn');
@@ -34,6 +36,16 @@
         if(userID === currUser._id) del = `<button class='btn del' value='${_id}'>Delete</button>`
         if(type === undefined || type === null) type = "";
         return `<div id='${_id+type}' class='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}${save}${del}<div>`;
+    }
+
+    function makeThread(data){
+        let {_id, title, postedDate, text, voting, likes, comments} = data;
+        title = `<h1><a href = '/thread/${_id}'>${title}</a></h1>`;
+        text = `<h2>Review:</h2><p>${text}</p>`;
+        voting = `<h3>Votes: ${voting}<h3>`;
+        postedDate = `<h3>Posted On: ${postedDate}</h3>`;
+        // name = `<h3>Posted By: <a href = '/userinfo/${userID}'>${name}</a></h3>`;
+        return `<div>${title}${text}${voting}${postedDate}</div>`;
     }
 
     $(document).on('click', 'button.like', function(){
@@ -136,6 +148,7 @@
         userLikedClick.hide();
         decline.hide();
         likedByUser.hide();
+        userThreads.hide()
     }
 
     onLoad();
@@ -305,6 +318,7 @@
                 friendReqBtn.hide();
                 userBioClick.hide();
                 userPostsClick.hide();
+                userThreadsClick.hide();
             }
             else if(data._id in currUser.blockedUsers){
                 delete currUser.blockedUsers[data._id];
@@ -316,6 +330,7 @@
                 friendReqBtn.show();
                 userBioClick.show();
                 userPostsClick.show();
+                userThreadsClick.show();
             }
 
             var updateBlock = {
@@ -364,12 +379,25 @@
                 likedByUser.prepend(rev);
             })
         })
+
+        let threadKeys = Object.keys(res.data.userThreads);
+        $.each(threadKeys, function(){
+            var getThread = {
+                method: 'GET',
+                url: `/getThread/${this}`
+            }
+            $.ajax(getThread).then(function(thread){
+                let dispThread = makeThread(thread);
+                userThreads.prepend(dispThread);
+            })
+        })
     })
 
     userBioClick.on('click', function(event){
         event.preventDefault();
         userPosts.hide();
         likedByUser.hide();
+        userThreads.hide();
         userBio.show();
     })
 
@@ -377,6 +405,7 @@
         event.preventDefault();
         userBio.hide();
         likedByUser.hide();
+        userThreads.hide();
         userPosts.show();
     })
 
@@ -384,6 +413,15 @@
         event.preventDefault();
         userBio.hide();
         userPosts.hide();
+        userThreads.hide();
         likedByUser.show();
+    })
+
+    userThreadsClick.on('click', function(event){
+        event.preventDefault();
+        userBio.hide();
+        userPosts.hide();
+        likedByUser.hide();
+        userThreads.show();
     })
 })(window.jQuery);

@@ -79,7 +79,6 @@
                 url: '/getinfo'
             }
             $.ajax(getUserInfo).then(function(userData){
-                console.log(likes);
                 if(!(userData._id in likes)){
                     $('#likeButton').text('Like');
                     $('#dislikeButton').text('Dislike');
