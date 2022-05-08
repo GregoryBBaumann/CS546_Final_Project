@@ -497,10 +497,15 @@ router.get('/popularData', async (req, res) => {
         return res.redirect('/');
     }
     else{
-        let data = await users.popularPage();
-        res.json({
-            data: data
-        });
+        try{
+            let data = await users.popularPage();
+            res.json({
+                data: data
+            });
+        } catch (e){
+            return res.status(400).json({error: e});
+        }
+        
     }
 });
 

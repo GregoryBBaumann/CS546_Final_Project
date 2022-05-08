@@ -9,6 +9,12 @@
         <ul id="threadList"></ul>
     </div>
 
+    {{#if error}}
+    <div class="error" id="newPopularError">
+        <label for="errorLabel" id="errorLabel">{{error}}</label>
+    </div>
+    {{/if}}
+    
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
     crossorigin="anonymous"></script>
     <script src="/public/js/popular.js"></script>
