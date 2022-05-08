@@ -26,7 +26,8 @@ router.get('/login', async(req, res) =>{
 })
 
 router.post('/login', async(req, res) =>{
-    let {email, password} = req.body;
+    let email = xss(req.body.email);
+    let password = xss(req.body.password);
     try{
         email = checkStr(email, "Email");
         email = checkEMail(email);
@@ -58,7 +59,15 @@ router.post('/signup', async(req, res) =>{
     if(req.session.user){
         return res.redirect('/');
     }
-    let {firstName, lastName, email, password, confirmPassword, gender, city, state, age} = req.body;
+    let firstName = xss(req.body.firstName);
+    let lastName = xss(req.body.lastName);
+    let email = xss(req.body.email);
+    let password = xss(req.body.password);
+    let confirmPassword = xss(req.body.confirmPassword);
+    let gender = xss(req.body.gender);
+    let city = xss(req.body.city);
+    let state = xss(req.body.state);
+    let age = xss(req.body.age);
     try{
         firstName = checkStr(firstName, "First Name");
         lastName = checkStr(lastName, "Last Name");
@@ -186,7 +195,7 @@ router.post('/review/newComment', async(req, res) => {
     else{
         try {
             let userId = ObjectId(req.session.user).toString();
-            let newComment = await users.postReviewComments(ObjectId(req.body.postId).toString(), userId, req.body.comment);
+            let newComment = await users.postReviewComments(ObjectId(xss(req.body.postId)).toString(), userId, xss(req.body.comment));
             if (newComment) {
                 res.json({ status: 'ok' });
             }
@@ -252,8 +261,15 @@ router.post('/editprofile', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
     }
-
-    let {firstName, lastName, email, password, confirmPassword, gender, city, state, age} = req.body;
+    let firstName = xss(req.body.firstName);
+    let lastName = xss(req.body.lastName);
+    let email = xss(req.body.email);
+    let password = xss(req.body.password);
+    let confirmPassword = xss(req.body.confirmPassword);
+    let gender = xss(req.body.gender);
+    let city = xss(req.body.city);
+    let state = xss(req.body.state);
+    let age = xss(req.body.age);
     let updateParams = {};
     try{
         if(firstName.length !== 0){
