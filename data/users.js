@@ -134,6 +134,8 @@ async function getReviewTitle(title){
 }
 
 async function updateUser(updateParams, id){
+    checkID(id);
+    if(updateParams === null) throw `Could not find update content.`
     const names = {
         firstName: "First Name",
         lastName : "Last Name",
@@ -183,6 +185,7 @@ async function updateUser(updateParams, id){
 }
 
 async function updateFriends(data){
+    if(data === null) throw `Could not find friends content.`
     if(!("friendReqSent" in data)) data["friendReqSent"] = {};
     if(!("friendReq" in data)) data["friendReq"] = {};
     if(!("friends" in data)) data["friends"] = {};
@@ -199,6 +202,8 @@ async function updateFriends(data){
 }
 
 async function postThread(title,postedDate,text,voting,userId){
+    checkID(userId);
+    if(postedDate === null) throw `Post date is missing`;
     let user = await getUser(userId);
     title = checkStr(title, "Title");
     text = checkStr(text, "Post text");
@@ -275,6 +280,7 @@ async function postThreadComment(comment, threadId, userId){
 }
 
 async function postThreadLike(threadId,userId,likeVal){
+    if(likeVal === null) throw `Like value is missing`;
     checkID(threadId);
     checkID(userId);
     let threadData = await getThreadId(threadId);
@@ -355,6 +361,7 @@ async function postReviewComments(reviewId, userId, comments){
 }
 
 async function updateReview(data){
+    if(data === null) throw `Input is null`;
     const reviewsCollection = await reviews();
     let id = data._id;
     delete data._id;
@@ -363,6 +370,7 @@ async function updateReview(data){
 }
 
 async function deletePost(postID){
+    checkID(postID);
     const userCollection = await users();
     const res = await userCollection.find({}).toArray();
     for(let u of res){
@@ -419,6 +427,8 @@ async function popularPage(){
 }
 
 async function blockUpdates(currUser, blockedUser){
+   // if(currUser === null) throw "Do not have current user";
+   // if(blockedUser === null) throw "Do not have blocked user";
     const userCollection = await users();
     const reviewsCollection = await reviews();
 
@@ -480,6 +490,8 @@ async function blockUpdates(currUser, blockedUser){
 }
 
 async function deleteThread(threadID, userID){
+    checkID(threadID);
+    checkID(userID);
     const threadCollection = await threads();
     let res1 = await threadCollection.deleteOne({_id: ObjectId(threadID)});
     
