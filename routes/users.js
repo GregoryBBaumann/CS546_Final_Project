@@ -456,6 +456,7 @@ router.post('/thread/:id/comment', async(req, res) =>{
     }
     else{
         try{
+            users.checkID(req.params.id);
             checkStr(xss(req.body.text));
             let comment = await users.postThreadComment(xss(req.body.text),req.params.id,req.session.user);
             return res.status(200).json({userName:comment.userName,comment:comment.comment});
@@ -489,6 +490,7 @@ router.post('/thread/:id/like', async(req, res) =>{
     }
     else{
         try{
+            users.checkID(req.params.id);
             let voting = await users.postThreadLike(req.params.id,req.session.user,1);
             return res.status(200).json({voting:voting});
         }catch (e){
@@ -503,6 +505,7 @@ router.post('/thread/:id/dislike', async(req, res) =>{
     }
     else{
         try{
+            users.checkID(req.params.id);
             let voting = await users.postThreadLike(req.params.id,req.session.user,-1);
             return res.status(200).json({voting:voting});
         }catch (e){

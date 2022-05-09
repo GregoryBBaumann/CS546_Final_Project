@@ -222,6 +222,7 @@ function checkStr(str, name){
         try {
             var text = $('#searchText').val();
             checkStr(text,"Search text")
+            text = text.trim();
             var searchThread = {
                 method: 'POST',
                 url: `/review/search`,
