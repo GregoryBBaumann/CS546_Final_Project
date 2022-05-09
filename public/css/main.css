@@ -1,7 +1,7 @@
 body{
     background-color: #E0FFFF;
     text-align: center;
-    color: #DDA0DD;
+    color: #540725;
 	transition: background 0.2s linear;
 }
 
@@ -28,7 +28,7 @@ input{
 
 #btn, .btn{
     font-size: 30px;
-    background-color: #DDA0DD;
+    background-color: #540725;
     color: #E0FFFF;
     padding: 1px 20px;
     border: 2px solid;
