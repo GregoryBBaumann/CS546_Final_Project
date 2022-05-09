@@ -1,7 +1,8 @@
 (function ($){
     var reviewPage = $('#reviewPage');
     var reviewId = $('#reviewid');
-    var id = reviewId.text()
+    var id = reviewId.text();
+    var errorLabel = $('#errorLabel');
     reviewId.hide();
 
     var reviewReq = {
@@ -26,8 +27,9 @@
         save = `<button class='btn save' value='${_id}'>${saveLabel}</button>`;
         let del = "";
         if(userID === currUser._id) del = `<button class='btn del' value='${_id}'>Delete</button>`
-        cmtIp = `<textarea name="commentinput" id="commentinput" cols="60" rows="2"></textarea>`
+        cmtIp = `<label for="commentinput"></label><textarea name="commentinput" id="commentinput" cols="60" rows="2"></textarea>`
         cmt = `<button class='btn comment' value='${_id}'>Comment</button>`;
+        errorDiv = `<div id="error" class="error"><label id="errorLabel" class "error"></label></div>`;
         cmtDiv = `<div id='comments'>`
         for(let i = comments.length - 1; i > -1; i -= 1){
             let content = comments[i][0];
@@ -37,7 +39,7 @@
             cmtDiv += finalContent;
         }
         cmtDiv += `</div>`;
-        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${save}${del}<br>${cmtIp}${cmt}${cmtDiv}<div>`;
+        return `<div id='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${save}${del}<br>${cmtIp}${cmt}${errorDiv}${cmtDiv}<div>`;
     }
 
     $.ajax(reviewReq).then(function(res){
@@ -87,10 +89,16 @@
     })
 
     $(document).on('click', 'button.comment', function(){
+        $('#error').hide();
         let id = this.value;
         let newcmt = $('#commentinput');
         let newComment = $('#commentinput').val().trim();
-        if(newComment.length != 0){
+        if(newComment.length === 0){
+            $('#error').show();
+            $('#errorLabel').text("Error: Comment is empty");
+        }
+        else{
+            $('#error').hide();
             var reviewReq = {
                 method: 'GET',
                 url: `/getreview/${id}`
