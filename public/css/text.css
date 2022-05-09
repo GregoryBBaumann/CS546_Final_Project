@@ -111,9 +111,13 @@ body.dark a{
 .errorLabel {
   color: red;
   margin: 20px;
+  font-size: x-large;
+  font-weight: bold;
 }
 
 body.dark .errorLabel {
   color: red;
   margin: 20px;
+  font-size: x-large;
+  font-weight: bold;
 }
