@@ -385,6 +385,16 @@ router.get('/myfriends', async(req, res) =>{
     }
 })
 
+router.get('/allthreads', async(req, res) =>{
+    if(!req.session.user){
+        return res.status(400);
+    }
+    else{
+        const result = await users.getAllThreads();
+        return res.status(200).json(result);
+    }
+})
+
 router.post('/threads', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
@@ -420,7 +430,7 @@ router.get('/thread/:id', async(req, res) =>{
             let thread = await users.getThreadId(req.params.id);
             return res.status(200).render('render/threadId',thread);
         }catch (e){
-            return res.status(400).json({error: e});
+            return res.status(404).render('render/threadNotFound', {});
         }
     }
 })
@@ -508,7 +518,7 @@ router.get('/blockedusers', async(req, res) =>{
 
 router.get('/getinfo', async(req, res) =>{
     if(!req.session.user){
-        return res.redirect('/');
+        return res.status(400);
     }
     else{
         const data = await users.getUser(req.session.user);
@@ -525,7 +535,7 @@ router.post('/deletepost', async(req, res) =>{
     if(!req.session.user) return res.status(400);
     else{
         let postID = xss(req.body.postID);
-        let user = xss(req.body.user);
+        let user = req.body.user;
         if(user._id != req.session.user) return res.status(400);
         const result = await users.deletePost(postID);
         return res.status(200).json({msg: "Success"});
@@ -535,8 +545,8 @@ router.post('/deletepost', async(req, res) =>{
 router.post('/blockUpdates', async(req, res) =>{
     if(!req.session.user) return res.status(400);
     else{
-        let currUser = xss(req.body.currUser);
-        let blockedUser = xss(req.body.blockedUser);
+        let currUser = req.body.currUser;
+        let blockedUser = req.body.blockedUser;
         const result = await users.blockUpdates(currUser, blockedUser);
         return res.status(200).json({msg: "Success"});
     }
@@ -565,6 +575,17 @@ router.get('/popular', async(req, res) =>{
     }
     else{
         res.render('render/popular', {});
+    }
+})
+
+router.post('/deletethread', async(req, res) =>{
+    if(!req.session.user) return res.status(400);
+    else{
+        let threadID = req.body.threadID;
+        let user = req.body.user;
+        if(user._id != req.session.user) return res.status(400);
+        const result = await users.deleteThread(threadID, user._id);
+        return res.status(200).json({msg: "Success"});
     }
 })
 

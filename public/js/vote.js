@@ -1,4 +1,6 @@
 (function ($) {
+    var delBtn = $('#delButton');
+
     $('#likeButton').click((event) => {
         $('#dislikeButton').text('Dislike');
         if($('#likeButton').text() === 'Like') $('#likeButton').text('Liked');
@@ -67,6 +69,7 @@
 
     var threadID = $('#threadId').text();
     function loadThread(){
+        delBtn.hide();
         var getThread = {
             method: 'GET',
             url: `/getThread/${threadID}`
@@ -79,6 +82,7 @@
                 url: '/getinfo'
             }
             $.ajax(getUserInfo).then(function(userData){
+                if(userData._id === res.userId) delBtn.show();
                 if(!(userData._id in likes)){
                     $('#likeButton').text('Like');
                     $('#dislikeButton').text('Dislike');
@@ -101,17 +105,44 @@
 
 
     $('#commmentButton').on('click', function(event){
+        $('#error').hide();
         event.preventDefault();
-        $('#commentsDiv').empty();
-        var t = $('#text').val();
+        var t = $('#text').val().trim();
         $('#text').val('');
-        var postComment = {
-            method: 'POST',
-            url: `/thread/${threadID}/comment`,
-            data: {text: t}
+        if(t.length === 0){
+            $('#error').show()
+            $('#errorLabel').text('Error: Empty comment');
         }
-        $.ajax(postComment).then(function(res){
-            loadThread();
+        else{
+            $('#error').hide();
+            $('#commentsDiv').empty();
+            var postComment = {
+                method: 'POST',
+                url: `/thread/${threadID}/comment`,
+                data: {text: t}
+            }
+            $.ajax(postComment).then(function(res){
+                loadThread();
+            })
+        }
+    })
+
+    $(document).on('click', 'button.del', function(){
+        let id = threadID;
+        var currUserReq = {
+            methood: 'GET',
+            url: '/getinfo'
+        };
+        $.ajax(currUserReq).then(function(res){
+            let data = {threadID: id, user: res};
+            var delReq = {
+                method: 'POST',
+                url: '/deletethread',
+                data: data
+            }
+            $.ajax(delReq).then(function(res){
+                $(`#${id}`).remove();
+            })
         })
     })
 

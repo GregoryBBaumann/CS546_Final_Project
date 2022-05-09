@@ -38,15 +38,38 @@
         return `<div id='${_id+type}' class='${_id}'>${title}${category}${rating}${review}${postedDate}${name}${likes}${like}${cmt}${save}${del}<div>`;
     }
 
-    function makeThread(data){
-        let {_id, title, postedDate, text, voting, likes, comments} = data;
+    function makeThread(data, currUser){
+        let {_id, title, postedDate, text, voting, likes, comments, userId, userName} = data;
         title = `<h1><a href = '/thread/${_id}'>${title}</a></h1>`;
-        text = `<h2>Review:</h2><p>${text}</p>`;
+        text = `<h2>${text}</h2>`;
         voting = `<h3>Votes: ${voting}<h3>`;
         postedDate = `<h3>Posted On: ${postedDate}</h3>`;
-        // name = `<h3>Posted By: <a href = '/userinfo/${userID}'>${name}</a></h3>`;
-        return `<div>${title}${text}${voting}${postedDate}</div>`;
+        userName = `<h3>Posted By: <a href = '/userinfo/${userId}'>${userName}</a></h3>`;
+        btn = ""
+        if(currUser._id === userId) btn = `<button class='btn delthread' value='${_id}'>Delete</button>`
+        return `<div id='${_id}thread'>${title}${text}${voting}${postedDate}${userName}${btn}</div>`;
     }
+
+    $(document).on('click', 'button.delthread', function(){
+        let id = this.value;
+        var currUserReq = {
+            methood: 'GET',
+            url: '/getinfo'
+        };
+        $.ajax(currUserReq).then(function(res){
+            let data = {threadID: id, user: res};
+            var delReq = {
+                method: 'POST',
+                url: '/deletethread',
+                data: data
+            }
+            $.ajax(delReq).then(function(res){
+                $(`#${id}thread`).remove();
+            })
+        })
+    })
+
+
 
     $(document).on('click', 'button.like', function(){
         let id = this.value;
@@ -387,7 +410,7 @@
                 url: `/getThread/${this}`
             }
             $.ajax(getThread).then(function(thread){
-                let dispThread = makeThread(thread);
+                let dispThread = makeThread(thread, res.currUser);
                 userThreads.prepend(dispThread);
             })
         })

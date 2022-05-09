@@ -1,4 +1,4 @@
-<div>
+<div id="{{_id}}">
     <h1 id="threadTitle"></h1>
     <h2 id="threadText"></h2>
     <h3 id="postedOn"></h3>
@@ -8,6 +8,7 @@
     <div class="like/dislike" id="like/dislike">
         <button class="btn" id="likeButton">Like</button>
         <button class="btn" id="dislikeButton">Dislike</button>
+        <button class="btn del" id="delButton">Delete</button>
     </div>
     
     <br>
@@ -17,6 +18,10 @@
             <textarea name="text" id="text" cols="50" rows="2"></textarea>
             <button class="btn" id="commmentButton" type="submit">Post Comment</button>
         </form>
+    </div>
+
+    <div id="error">
+        <label id="errorLabel"></label>
     </div>
 
     <div id="commentsDiv">
