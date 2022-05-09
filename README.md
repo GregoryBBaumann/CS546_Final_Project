@@ -1,1 +1,6 @@
-This will be the repository for all CS546-B Final Project Code updates and changes
+===============Start=================
+
+1. Install node dependicies "npm install"
+2. (Optional) Seed the database "npm run seed" (also clears the DB)
+3. Run the application "npm start"
+4. Access application at http://localhost:3000
