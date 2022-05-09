@@ -199,6 +199,7 @@ async function updateFriends(data){
 }
 
 async function postThread(title,postedDate,text,voting,userId){
+    let user = await getUser(userId);
     title = checkStr(title, "Title");
     text = checkStr(text, "Post text");
     if(typeof voting != 'number'){
@@ -210,6 +211,8 @@ async function postThread(title,postedDate,text,voting,userId){
         postedDate: postedDate,
         text: text,
         voting: voting,
+        userId: userId,
+        userName: `${user.firstName} ${user.lastName}`,
         likes: {},
         comments: []
     }
@@ -220,7 +223,6 @@ async function postThread(title,postedDate,text,voting,userId){
     if(!res.acknowledged || !res.insertedId) throw `Could not insert thread`;
     
     // Insert thread into user threads
-    let user = await getUser(userId);
     user.userThreads[data._id] = ObjectId(userId);
     const userCollection = await users();
     res = await userCollection.updateOne({_id: ObjectId(userId)}, {$set: user})
@@ -477,6 +479,16 @@ async function blockUpdates(currUser, blockedUser){
     await userCollection.updateOne({_id: ObjectId(blockedUserID)}, {$set: blockedUser});
 }
 
+async function deleteThread(threadID, userID){
+    const threadCollection = await threads();
+    let res1 = await threadCollection.deleteOne({_id: ObjectId(threadID)});
+    
+    const userCollection = await users();
+    user = await getUser(userID);
+    delete user.userThreads[threadID];
+    let res2 = await userCollection.updateOne({_id: ObjectId(userID)}, {$set: user})
+}
+
 
 module.exports = {
     signUp,
@@ -501,5 +513,6 @@ module.exports = {
     popularPage,
     blockUpdates,
     getAllUsers,
-    getReviewTitle
+    getReviewTitle,
+    deleteThread
 }

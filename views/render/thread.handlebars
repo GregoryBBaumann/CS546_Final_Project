@@ -22,20 +22,14 @@
             <button type="submit" id="forumButton" class="btn">Post</button>
         </form>
     </div>
-    {{#if error}}
-    <div class="errorLabel" id="newThreadError">
+    <br>
+
+    <div class="errorLabel" id="error">
         <label for="errorLabel" id="errorLabel">{{error}}</label>
     </div>
-    {{/if}}
-    <div class="threadsList" id="threadsList">
-        {{#if threadList}}
-            {{#each threadList}}
-                <div class="threadLink">
-                    <a href="/thread/{{this._id}}">{{this.title}}</a>
-                    <p>{{this.text}}</p>
-                </div>
-            {{/each}}
-        {{/if}}
+
+    <div id="threadList">
+
     </div>
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
