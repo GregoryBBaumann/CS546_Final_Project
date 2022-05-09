@@ -13,19 +13,19 @@ function checkStr(str, name){
         searchForum.submit(function (event) {
             event.preventDefault();
             try {
-                var text = $('#searchText').val();
-                checkStr(text,"Search text")
+                var searchText = $('#searchText').val();
+                checkStr(searchText,"Search searchText")
                 var searchThread = {
                     method: 'POST',
                     url: `/thread/search`,
-                    data: {text: text}
+                    data: {searchText: searchText}
                 }
                 $.ajax(searchThread).then(function (res) {
                     result.show();
                     if(res.error){
                         result.html(
                             `<p>
-                                No thread found matching "${text}"
+                                No thread found matching "${searchText}"
                             </p>`
                         );
                     }else{
