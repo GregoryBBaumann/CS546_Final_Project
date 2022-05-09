@@ -52,10 +52,12 @@
     });
 
     function makeThread(data){
-        let {_id, title, postedDate, text, voting, likes, comments} = data;
+        let {_id, title, postedDate, text, voting, likes, comments, userName, userId} = data;
         $('#threadTitle').text(title);
         $('#threadText').text(text);
         $('#postedOn').text(`Posted On: ${postedDate}`);
+        $('#postedBy').empty();
+        $('#postedBy').prepend(`Posted By: <a href='/userinfo/${userId}'>${userName}</a>`)
         $('#voting').text(`Votes: ${voting}`);
         for(let i = comments.length - 1; i > -1; i -= 1){
             let comment = comments[i].comment;
