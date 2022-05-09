@@ -171,7 +171,7 @@
         userLikedClick.hide();
         decline.hide();
         likedByUser.hide();
-        userThreads.hide()
+        userThreads.hide();
     }
 
     onLoad();
@@ -198,6 +198,7 @@
             friendReqBtn.hide();
             userBioClick.hide();
             userPostsClick.hide();
+            userThreadsClick.hide();
         }
         else if(currUser._id in data.blockedUsers){
             userName.innerHTML = "User Not Found";
@@ -205,6 +206,7 @@
             friendReqBtn.show();
             userBioClick.show();
             userPostsClick.show();
+            userThreadsClick.show();
         }
 
         else{
