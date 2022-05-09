@@ -125,12 +125,15 @@ async function getAllReviews(){
 
 async function getReviewTitle(title){
     title = checkStr(title);
-    const reviewCollection = await reviews();
-    const data = await reviewCollection.findOne({title: title});
-    if (data === null){
-        return -1;
+    title = title.toLowerCase();
+    const reviewArr = await getAllReviews();
+    for(const i in reviewArr){
+        let reviewTitle = reviewArr[i].title.toLowerCase();
+        if(reviewTitle == title){
+            return reviewArr[i];
+        }
     }
-    return data;
+    return -1;
 }
 
 async function updateUser(updateParams, id){
@@ -243,12 +246,15 @@ async function getAllThreads(){
 
 async function getThreadTitle(title){
     title = checkStr(title);
-    const threadCollection = await threads();
-    const data = await threadCollection.findOne({title: title});
-    if (data === null){
-        return -1;
+    title = title.toLowerCase();
+    const threadArr = await getAllThreads();
+    for(const i in threadArr){
+        let threadTitle = threadArr[i].title.toLowerCase();
+        if(threadTitle == title){
+            return threadArr[i];
+        }
     }
-    return data;
+    return -1;
 }
 
 async function getThreadId(id){
