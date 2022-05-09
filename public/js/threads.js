@@ -103,7 +103,8 @@ function checkStr(str, name){
         event.preventDefault();
         try {
             var searchText = $('#searchText').val();
-            checkStr(searchText,"Search searchText")
+            checkStr(searchText,"Search text")
+            searchText = searchText.trim();
             var searchThread = {
                 method: 'POST',
                 url: `/thread/search`,
