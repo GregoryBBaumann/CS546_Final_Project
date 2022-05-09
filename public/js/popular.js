@@ -31,7 +31,7 @@
         let id = data._id;
         let title = data.title;
         let likes = data.voting;
-        let newItem = $(`<li> title: ${title} &emsp; likes: ${likes} &emsp; <a href='/thread/${id}'>View Thread</a></li>`);
+        let newItem = $(`<li> title: ${title} &emsp; votes: ${likes} &emsp; <a href='/thread/${id}'>View Thread</a></li>`);
         return newItem;
     }
 })(jQuery);

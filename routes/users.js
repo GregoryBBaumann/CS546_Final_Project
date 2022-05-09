@@ -165,6 +165,9 @@ router.post('/updatereview', async(req, res) =>{
     else{
         if(!('likes' in req.body)) req.body['likes'] = {};
         if(!('comments' in req.body)) req.body['comments'] = [];
+        for(let i = 0; i < req.body.comments.length; i += 1){
+            req.body.comments[i][0] = xss(req.body.comments[i][0]);
+        }
         let result = await users.updateReview(req.body);
         return res.status(200).json("Success");
     }
@@ -279,15 +282,15 @@ router.post('/editprofile', async(req, res) =>{
     if(!req.session.user){
         return res.redirect('/');
     }
-    let firstName = xss(req.body.firstName);
-    let lastName = xss(req.body.lastName);
-    let email = xss(req.body.email);
+    let firstName = xss(req.body.firstName.trim());
+    let lastName = xss(req.body.lastName.trim());
+    let email = xss(req.body.email.trim());
     let password = xss(req.body.password);
     let confirmPassword = xss(req.body.confirmPassword);
-    let gender = xss(req.body.gender);
-    let city = xss(req.body.city);
-    let state = xss(req.body.state);
-    let age = xss(req.body.age);
+    let gender = xss(req.body.gender.trim());
+    let city = xss(req.body.city.trim());
+    let state = xss(req.body.state.trim());
+    let age = xss(req.body.age.trim());
     let updateParams = {};
     try{
         if(firstName.length !== 0){
