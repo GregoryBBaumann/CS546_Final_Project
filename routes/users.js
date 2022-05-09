@@ -584,7 +584,7 @@ router.get('/popular', async(req, res) =>{
 router.post('/deletethread', async(req, res) =>{
     if(!req.session.user) return res.status(400);
     else{
-        let threadID = req.body.threadID;
+        let threadID = xss(req.body.threadID);
         let user = req.body.user;
         if(user._id != req.session.user) return res.status(400);
         const result = await users.deleteThread(threadID, user._id);
