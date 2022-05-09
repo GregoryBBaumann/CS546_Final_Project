@@ -471,8 +471,8 @@ router.post('/thread/search', async(req, res) =>{
     }
     else{
         try{
-            checkStr(xss(req.body.text));
-            let thread = await users.getThreadTitle(xss(req.body.text));
+            checkStr(xss(req.body.searchText));
+            let thread = await users.getThreadTitle(xss(req.body.searchText));
             if(thread == -1){
                 return res.status(200).json({error:"Thread Not Found"});
             }
