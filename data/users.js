@@ -173,8 +173,9 @@ async function updateUser(updateParams, id){
         else name += user['lastName'];
     }
     if(name.length !== 0){
-        for(let i of user.userReviews){
-            i['name'] = name;
+        let keys = Object.keys(user.userReviews);
+        for(let k of keys){
+            k['name'] = name;
         }
         updateParams.userReviews = user.userReviews;
     }
