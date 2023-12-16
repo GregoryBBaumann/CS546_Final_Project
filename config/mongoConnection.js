@@ -1,20 +1,24 @@
 const MongoClient = require('mongodb').MongoClient;
-const settings = require('./settings');
-const mongoConfig = settings.mongoConfig;
+require('dotenv').config();
 
 let _connection = undefined;
 let _db = undefined;
+const username = process.env.MONGODB_USERNAME;
+const password = process.env.MONGODB_PASSWORD;
+const cluster = process.env.MONGODB_CLUSTER;
+const database = `FinalProject`;
+const url = `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/?retryWrites=true&w=majority`
 
 module.exports = {
-    dbConnection: async() =>{
-        if(!_connection){
-            _connection = await MongoClient.connect(mongoConfig.serverUrl);
-            _db = await _connection.db(mongoConfig.database);
+    dbConnection: async () => {
+        if (!_connection) {
+            _connection = await MongoClient.connect(url);
+            _db = await _connection.db(database);
         }
 
         return _db;
     },
-    closeConnection: () =>{
+    closeConnection: () => {
         _connection.close();
     }
 };
